@@ -6,53 +6,42 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.IRegistry;
 
-public class ModelManager implements IResourceManagerReloadListener
-{
-    private IRegistry modelRegistry;
-    private final TextureMap field_174956_b;
-    private final BlockModelShapes field_174957_c;
-    private IBakedModel defaultModel;
-    private static final String __OBFID = "CL_00002388";
+public class ModelManager implements IResourceManagerReloadListener {
+	private IRegistry<ModelResourceLocation, IBakedModel> modelRegistry;
+	private final TextureMap texMap;
+	private final BlockModelShapes modelProvider;
+	private IBakedModel defaultModel;
 
-    public ModelManager(TextureMap p_i46082_1_)
-    {
-        this.field_174956_b = p_i46082_1_;
-        this.field_174957_c = new BlockModelShapes(this);
-    }
+	public ModelManager(TextureMap textures) {
+		this.texMap = textures;
+		this.modelProvider = new BlockModelShapes(this);
+	}
 
-    public void onResourceManagerReload(IResourceManager p_110549_1_)
-    {
-        ModelBakery var2 = new ModelBakery(p_110549_1_, this.field_174956_b, this.field_174957_c);
-        this.modelRegistry = var2.setupModelRegistry();
-        this.defaultModel = (IBakedModel)this.modelRegistry.getObject(ModelBakery.MODEL_MISSING);
-        this.field_174957_c.func_178124_c();
-    }
+	public void onResourceManagerReload(IResourceManager resourceManager) {
+		ModelBakery modelbakery = new ModelBakery(resourceManager, this.texMap, this.modelProvider);
+		this.modelRegistry = modelbakery.setupModelRegistry();
+		this.defaultModel = (IBakedModel) this.modelRegistry.getObject(ModelBakery.MODEL_MISSING);
+		this.modelProvider.reloadModels();
+	}
 
-    public IBakedModel getModel(ModelResourceLocation p_174953_1_)
-    {
-        if (p_174953_1_ == null)
-        {
-            return this.defaultModel;
-        }
-        else
-        {
-            IBakedModel var2 = (IBakedModel)this.modelRegistry.getObject(p_174953_1_);
-            return var2 == null ? this.defaultModel : var2;
-        }
-    }
+	public IBakedModel getModel(ModelResourceLocation modelLocation) {
+		if (modelLocation == null) {
+			return this.defaultModel;
+		} else {
+			IBakedModel ibakedmodel = (IBakedModel) this.modelRegistry.getObject(modelLocation);
+			return ibakedmodel == null ? this.defaultModel : ibakedmodel;
+		}
+	}
 
-    public IBakedModel getMissingModel()
-    {
-        return this.defaultModel;
-    }
+	public IBakedModel getMissingModel() {
+		return this.defaultModel;
+	}
 
-    public TextureMap func_174952_b()
-    {
-        return this.field_174956_b;
-    }
+	public TextureMap getTextureMap() {
+		return this.texMap;
+	}
 
-    public BlockModelShapes getBlockModelShapes()
-    {
-        return this.field_174957_c;
-    }
+	public BlockModelShapes getBlockModelShapes() {
+		return this.modelProvider;
+	}
 }

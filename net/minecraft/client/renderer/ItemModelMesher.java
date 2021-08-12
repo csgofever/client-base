@@ -1,9 +1,10 @@
 package net.minecraft.client.renderer;
 
-import com.google.common.collect.Maps;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.google.common.collect.Maps;
+
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.client.resources.model.ModelManager;
@@ -11,92 +12,73 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class ItemModelMesher
-{
-    private final Map simpleShapes = Maps.newHashMap();
-    private final Map simpleShapesCache = Maps.newHashMap();
-    private final Map shapers = Maps.newHashMap();
-    private final ModelManager modelManager;
-    private static final String __OBFID = "CL_00002536";
+public class ItemModelMesher {
+	private final Map<Integer, ModelResourceLocation> simpleShapes = Maps.<Integer, ModelResourceLocation>newHashMap();
+	private final Map<Integer, IBakedModel> simpleShapesCache = Maps.<Integer, IBakedModel>newHashMap();
+	private final Map<Item, ItemMeshDefinition> shapers = Maps.<Item, ItemMeshDefinition>newHashMap();
+	private final ModelManager modelManager;
 
-    public ItemModelMesher(ModelManager p_i46250_1_)
-    {
-        this.modelManager = p_i46250_1_;
-    }
+	public ItemModelMesher(ModelManager modelManager) {
+		this.modelManager = modelManager;
+	}
 
-    public TextureAtlasSprite getParticleIcon(Item p_178082_1_)
-    {
-        return this.getParticleIcon(p_178082_1_, 0);
-    }
+	public TextureAtlasSprite getParticleIcon(Item item) {
+		return this.getParticleIcon(item, 0);
+	}
 
-    public TextureAtlasSprite getParticleIcon(Item p_178087_1_, int p_178087_2_)
-    {
-        return this.getItemModel(new ItemStack(p_178087_1_, 1, p_178087_2_)).getTexture();
-    }
+	public TextureAtlasSprite getParticleIcon(Item item, int meta) {
+		return this.getItemModel(new ItemStack(item, 1, meta)).getParticleTexture();
+	}
 
-    public IBakedModel getItemModel(ItemStack p_178089_1_)
-    {
-        Item var2 = p_178089_1_.getItem();
-        IBakedModel var3 = this.getItemModel(var2, this.getMetadata(p_178089_1_));
+	public IBakedModel getItemModel(ItemStack stack) {
+		Item item = stack.getItem();
+		IBakedModel ibakedmodel = this.getItemModel(item, this.getMetadata(stack));
 
-        if (var3 == null)
-        {
-            ItemMeshDefinition var4 = (ItemMeshDefinition)this.shapers.get(var2);
+		if (ibakedmodel == null) {
+			ItemMeshDefinition itemmeshdefinition = (ItemMeshDefinition) this.shapers.get(item);
 
-            if (var4 != null)
-            {
-                var3 = this.modelManager.getModel(var4.getModelLocation(p_178089_1_));
-            }
-        }
+			if (itemmeshdefinition != null) {
+				ibakedmodel = this.modelManager.getModel(itemmeshdefinition.getModelLocation(stack));
+			}
+		}
 
-        if (var3 == null)
-        {
-            var3 = this.modelManager.getMissingModel();
-        }
+		if (ibakedmodel == null) {
+			ibakedmodel = this.modelManager.getMissingModel();
+		}
 
-        return var3;
-    }
+		return ibakedmodel;
+	}
 
-    protected int getMetadata(ItemStack p_178084_1_)
-    {
-        return p_178084_1_.isItemStackDamageable() ? 0 : p_178084_1_.getMetadata();
-    }
+	protected int getMetadata(ItemStack stack) {
+		return stack.isItemStackDamageable() ? 0 : stack.getMetadata();
+	}
 
-    protected IBakedModel getItemModel(Item p_178088_1_, int p_178088_2_)
-    {
-        return (IBakedModel)this.simpleShapesCache.get(Integer.valueOf(this.getIndex(p_178088_1_, p_178088_2_)));
-    }
+	protected IBakedModel getItemModel(Item item, int meta) {
+		return (IBakedModel) this.simpleShapesCache.get(Integer.valueOf(this.getIndex(item, meta)));
+	}
 
-    private int getIndex(Item p_178081_1_, int p_178081_2_)
-    {
-        return Item.getIdFromItem(p_178081_1_) << 16 | p_178081_2_;
-    }
+	private int getIndex(Item item, int meta) {
+		return Item.getIdFromItem(item) << 16 | meta;
+	}
 
-    public void register(Item p_178086_1_, int p_178086_2_, ModelResourceLocation p_178086_3_)
-    {
-        this.simpleShapes.put(Integer.valueOf(this.getIndex(p_178086_1_, p_178086_2_)), p_178086_3_);
-        this.simpleShapesCache.put(Integer.valueOf(this.getIndex(p_178086_1_, p_178086_2_)), this.modelManager.getModel(p_178086_3_));
-    }
+	public void register(Item item, int meta, ModelResourceLocation location) {
+		this.simpleShapes.put(Integer.valueOf(this.getIndex(item, meta)), location);
+		this.simpleShapesCache.put(Integer.valueOf(this.getIndex(item, meta)), this.modelManager.getModel(location));
+	}
 
-    public void register(Item p_178080_1_, ItemMeshDefinition p_178080_2_)
-    {
-        this.shapers.put(p_178080_1_, p_178080_2_);
-    }
+	public void register(Item item, ItemMeshDefinition definition) {
+		this.shapers.put(item, definition);
+	}
 
-    public ModelManager getModelManager()
-    {
-        return this.modelManager;
-    }
+	public ModelManager getModelManager() {
+		return this.modelManager;
+	}
 
-    public void rebuildCache()
-    {
-        this.simpleShapesCache.clear();
-        Iterator var1 = this.simpleShapes.entrySet().iterator();
+	public void rebuildCache() {
+		this.simpleShapesCache.clear();
 
-        while (var1.hasNext())
-        {
-            Entry var2 = (Entry)var1.next();
-            this.simpleShapesCache.put(var2.getKey(), this.modelManager.getModel((ModelResourceLocation)var2.getValue()));
-        }
-    }
+		for (Entry<Integer, ModelResourceLocation> entry : this.simpleShapes.entrySet()) {
+			this.simpleShapesCache.put(entry.getKey(), this.modelManager.getModel((ModelResourceLocation) entry.getValue()));
+		}
+	}
 }

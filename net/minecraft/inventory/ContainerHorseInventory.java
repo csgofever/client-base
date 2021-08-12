@@ -5,130 +5,96 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-public class ContainerHorseInventory extends Container
-{
-    private IInventory field_111243_a;
-    private EntityHorse theHorse;
-    private static final String __OBFID = "CL_00001751";
+public class ContainerHorseInventory extends Container {
+	private IInventory horseInventory;
+	private EntityHorse theHorse;
 
-    public ContainerHorseInventory(IInventory p_i45791_1_, final IInventory p_i45791_2_, final EntityHorse p_i45791_3_, EntityPlayer p_i45791_4_)
-    {
-        this.field_111243_a = p_i45791_2_;
-        this.theHorse = p_i45791_3_;
-        byte var5 = 3;
-        p_i45791_2_.openInventory(p_i45791_4_);
-        int var6 = (var5 - 4) * 18;
-        this.addSlotToContainer(new Slot(p_i45791_2_, 0, 8, 18)
-        {
-            private static final String __OBFID = "CL_00001752";
-            public boolean isItemValid(ItemStack stack)
-            {
-                return super.isItemValid(stack) && stack.getItem() == Items.saddle && !this.getHasStack();
-            }
-        });
-        this.addSlotToContainer(new Slot(p_i45791_2_, 1, 8, 36)
-        {
-            private static final String __OBFID = "CL_00001753";
-            public boolean isItemValid(ItemStack stack)
-            {
-                return super.isItemValid(stack) && p_i45791_3_.canWearArmor() && EntityHorse.func_146085_a(stack.getItem());
-            }
-            public boolean canBeHovered()
-            {
-                return p_i45791_3_.canWearArmor();
-            }
-        });
-        int var7;
-        int var8;
+	public ContainerHorseInventory(IInventory playerInventory, final IInventory horseInventoryIn, final EntityHorse horse, EntityPlayer player) {
+		this.horseInventory = horseInventoryIn;
+		this.theHorse = horse;
+		int i = 3;
+		horseInventoryIn.openInventory(player);
+		int j = (i - 4) * 18;
+		this.addSlotToContainer(new Slot(horseInventoryIn, 0, 8, 18) {
+			public boolean isItemValid(ItemStack stack) {
+				return super.isItemValid(stack) && stack.getItem() == Items.saddle && !this.getHasStack();
+			}
+		});
+		this.addSlotToContainer(new Slot(horseInventoryIn, 1, 8, 36) {
+			public boolean isItemValid(ItemStack stack) {
+				return super.isItemValid(stack) && horse.canWearArmor() && EntityHorse.isArmorItem(stack.getItem());
+			}
 
-        if (p_i45791_3_.isChested())
-        {
-            for (var7 = 0; var7 < var5; ++var7)
-            {
-                for (var8 = 0; var8 < 5; ++var8)
-                {
-                    this.addSlotToContainer(new Slot(p_i45791_2_, 2 + var8 + var7 * 5, 80 + var8 * 18, 18 + var7 * 18));
-                }
-            }
-        }
+			public boolean canBeHovered() {
+				return horse.canWearArmor();
+			}
+		});
 
-        for (var7 = 0; var7 < 3; ++var7)
-        {
-            for (var8 = 0; var8 < 9; ++var8)
-            {
-                this.addSlotToContainer(new Slot(p_i45791_1_, var8 + var7 * 9 + 9, 8 + var8 * 18, 102 + var7 * 18 + var6));
-            }
-        }
+		if (horse.isChested()) {
+			for (int k = 0; k < i; ++k) {
+				for (int l = 0; l < 5; ++l) {
+					this.addSlotToContainer(new Slot(horseInventoryIn, 2 + l + k * 5, 80 + l * 18, 18 + k * 18));
+				}
+			}
+		}
 
-        for (var7 = 0; var7 < 9; ++var7)
-        {
-            this.addSlotToContainer(new Slot(p_i45791_1_, var7, 8 + var7 * 18, 160 + var6));
-        }
-    }
+		for (int i1 = 0; i1 < 3; ++i1) {
+			for (int k1 = 0; k1 < 9; ++k1) {
+				this.addSlotToContainer(new Slot(playerInventory, k1 + i1 * 9 + 9, 8 + k1 * 18, 102 + i1 * 18 + j));
+			}
+		}
 
-    public boolean canInteractWith(EntityPlayer playerIn)
-    {
-        return this.field_111243_a.isUseableByPlayer(playerIn) && this.theHorse.isEntityAlive() && this.theHorse.getDistanceToEntity(playerIn) < 8.0F;
-    }
+		for (int j1 = 0; j1 < 9; ++j1) {
+			this.addSlotToContainer(new Slot(playerInventory, j1, 8 + j1 * 18, 160 + j));
+		}
+	}
 
-    /**
-     * Take a stack from the specified inventory slot.
-     */
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
-    {
-        ItemStack var3 = null;
-        Slot var4 = (Slot)this.inventorySlots.get(index);
+	public boolean canInteractWith(EntityPlayer playerIn) {
+		return this.horseInventory.isUseableByPlayer(playerIn) && this.theHorse.isEntityAlive() && this.theHorse.getDistanceToEntity(playerIn) < 8.0F;
+	}
 
-        if (var4 != null && var4.getHasStack())
-        {
-            ItemStack var5 = var4.getStack();
-            var3 = var5.copy();
+	/**
+	 * Take a stack from the specified inventory slot.
+	 */
+	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+		ItemStack itemstack = null;
+		Slot slot = (Slot) this.inventorySlots.get(index);
 
-            if (index < this.field_111243_a.getSizeInventory())
-            {
-                if (!this.mergeItemStack(var5, this.field_111243_a.getSizeInventory(), this.inventorySlots.size(), true))
-                {
-                    return null;
-                }
-            }
-            else if (this.getSlot(1).isItemValid(var5) && !this.getSlot(1).getHasStack())
-            {
-                if (!this.mergeItemStack(var5, 1, 2, false))
-                {
-                    return null;
-                }
-            }
-            else if (this.getSlot(0).isItemValid(var5))
-            {
-                if (!this.mergeItemStack(var5, 0, 1, false))
-                {
-                    return null;
-                }
-            }
-            else if (this.field_111243_a.getSizeInventory() <= 2 || !this.mergeItemStack(var5, 2, this.field_111243_a.getSizeInventory(), false))
-            {
-                return null;
-            }
+		if (slot != null && slot.getHasStack()) {
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
 
-            if (var5.stackSize == 0)
-            {
-                var4.putStack((ItemStack)null);
-            }
-            else
-            {
-                var4.onSlotChanged();
-            }
-        }
+			if (index < this.horseInventory.getSizeInventory()) {
+				if (!this.mergeItemStack(itemstack1, this.horseInventory.getSizeInventory(), this.inventorySlots.size(), true)) {
+					return null;
+				}
+			} else if (this.getSlot(1).isItemValid(itemstack1) && !this.getSlot(1).getHasStack()) {
+				if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
+					return null;
+				}
+			} else if (this.getSlot(0).isItemValid(itemstack1)) {
+				if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
+					return null;
+				}
+			} else if (this.horseInventory.getSizeInventory() <= 2 || !this.mergeItemStack(itemstack1, 2, this.horseInventory.getSizeInventory(), false)) {
+				return null;
+			}
 
-        return var3;
-    }
+			if (itemstack1.stackSize == 0) {
+				slot.putStack((ItemStack) null);
+			} else {
+				slot.onSlotChanged();
+			}
+		}
 
-    /**
-     * Called when the container is closed.
-     */
-    public void onContainerClosed(EntityPlayer p_75134_1_)
-    {
-        super.onContainerClosed(p_75134_1_);
-        this.field_111243_a.closeInventory(p_75134_1_);
-    }
+		return itemstack;
+	}
+
+	/**
+	 * Called when the container is closed.
+	 */
+	public void onContainerClosed(EntityPlayer playerIn) {
+		super.onContainerClosed(playerIn);
+		this.horseInventory.closeInventory(playerIn);
+	}
 }

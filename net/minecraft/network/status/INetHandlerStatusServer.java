@@ -4,9 +4,8 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.status.client.C00PacketServerQuery;
 import net.minecraft.network.status.client.C01PacketPing;
 
-public interface INetHandlerStatusServer extends INetHandler
-{
-    void processPing(C01PacketPing var1);
+public interface INetHandlerStatusServer extends INetHandler {
+	void processPing(C01PacketPing packetIn);
 
-    void processServerQuery(C00PacketServerQuery var1);
+	void processServerQuery(C00PacketServerQuery packetIn);
 }

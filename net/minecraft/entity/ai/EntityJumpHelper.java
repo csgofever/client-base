@@ -2,28 +2,23 @@ package net.minecraft.entity.ai;
 
 import net.minecraft.entity.EntityLiving;
 
-public class EntityJumpHelper
-{
-    private EntityLiving entity;
-    protected boolean isJumping;
-    private static final String __OBFID = "CL_00001571";
+public class EntityJumpHelper {
+	private EntityLiving entity;
+	protected boolean isJumping;
 
-    public EntityJumpHelper(EntityLiving p_i1612_1_)
-    {
-        this.entity = p_i1612_1_;
-    }
+	public EntityJumpHelper(EntityLiving entityIn) {
+		this.entity = entityIn;
+	}
 
-    public void setJumping()
-    {
-        this.isJumping = true;
-    }
+	public void setJumping() {
+		this.isJumping = true;
+	}
 
-    /**
-     * Called to actually make the entity jump if isJumping is true.
-     */
-    public void doJump()
-    {
-        this.entity.setJumping(this.isJumping);
-        this.isJumping = false;
-    }
+	/**
+	 * Called to actually make the entity jump if isJumping is true.
+	 */
+	public void doJump() {
+		this.entity.setJumping(this.isJumping);
+		this.isJumping = false;
+	}
 }

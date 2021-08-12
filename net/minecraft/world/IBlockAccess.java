@@ -6,24 +6,28 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.biome.BiomeGenBase;
 
-public interface IBlockAccess
-{
-    TileEntity getTileEntity(BlockPos var1);
+public interface IBlockAccess {
+	TileEntity getTileEntity(BlockPos pos);
 
-    int getCombinedLight(BlockPos var1, int var2);
+	int getCombinedLight(BlockPos pos, int lightValue);
 
-    IBlockState getBlockState(BlockPos var1);
+	IBlockState getBlockState(BlockPos pos);
 
-    boolean isAirBlock(BlockPos var1);
+	/**
+	 * Checks to see if an air block exists at the provided location. Note that this
+	 * only checks to see if the blocks material is set to air, meaning it is
+	 * possible for non-vanilla blocks to still pass this check.
+	 */
+	boolean isAirBlock(BlockPos pos);
 
-    BiomeGenBase getBiomeGenForCoords(BlockPos var1);
+	BiomeGenBase getBiomeGenForCoords(BlockPos pos);
 
-    /**
-     * set by !chunk.getAreLevelsEmpty
-     */
-    boolean extendedLevelsInChunkCache();
+	/**
+	 * set by !chunk.getAreLevelsEmpty
+	 */
+	boolean extendedLevelsInChunkCache();
 
-    int getStrongPower(BlockPos var1, EnumFacing var2);
+	int getStrongPower(BlockPos pos, EnumFacing direction);
 
-    WorldType getWorldType();
+	WorldType getWorldType();
 }

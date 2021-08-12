@@ -6,77 +6,66 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class BehaviorDefaultDispenseItem implements IBehaviorDispenseItem
-{
-    private static final String __OBFID = "CL_00001195";
+public class BehaviorDefaultDispenseItem implements IBehaviorDispenseItem {
+	/**
+	 * Dispenses the specified ItemStack from a dispenser.
+	 */
+	public final ItemStack dispense(IBlockSource source, ItemStack stack) {
+		ItemStack itemstack = this.dispenseStack(source, stack);
+		this.playDispenseSound(source);
+		this.spawnDispenseParticles(source, BlockDispenser.getFacing(source.getBlockMetadata()));
+		return itemstack;
+	}
 
-    /**
-     * Dispenses the specified ItemStack from a dispenser.
-     */
-    public final ItemStack dispense(IBlockSource source, ItemStack stack)
-    {
-        ItemStack var3 = this.dispenseStack(source, stack);
-        this.playDispenseSound(source);
-        this.spawnDispenseParticles(source, BlockDispenser.getFacing(source.getBlockMetadata()));
-        return var3;
-    }
+	/**
+	 * Dispense the specified stack, play the dispense sound and spawn particles.
+	 */
+	protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
+		EnumFacing enumfacing = BlockDispenser.getFacing(source.getBlockMetadata());
+		IPosition iposition = BlockDispenser.getDispensePosition(source);
+		ItemStack itemstack = stack.splitStack(1);
+		doDispense(source.getWorld(), itemstack, 6, enumfacing, iposition);
+		return stack;
+	}
 
-    /**
-     * Dispense the specified stack, play the dispense sound and spawn particles.
-     */
-    protected ItemStack dispenseStack(IBlockSource source, ItemStack stack)
-    {
-        EnumFacing var3 = BlockDispenser.getFacing(source.getBlockMetadata());
-        IPosition var4 = BlockDispenser.getDispensePosition(source);
-        ItemStack var5 = stack.splitStack(1);
-        doDispense(source.getWorld(), var5, 6, var3, var4);
-        return stack;
-    }
+	public static void doDispense(World worldIn, ItemStack stack, int speed, EnumFacing facing, IPosition position) {
+		double d0 = position.getX();
+		double d1 = position.getY();
+		double d2 = position.getZ();
 
-    public static void doDispense(World worldIn, ItemStack stack, int speed, EnumFacing p_82486_3_, IPosition position)
-    {
-        double var5 = position.getX();
-        double var7 = position.getY();
-        double var9 = position.getZ();
+		if (facing.getAxis() == EnumFacing.Axis.Y) {
+			d1 = d1 - 0.125D;
+		} else {
+			d1 = d1 - 0.15625D;
+		}
 
-        if (p_82486_3_.getAxis() == EnumFacing.Axis.Y)
-        {
-            var7 -= 0.125D;
-        }
-        else
-        {
-            var7 -= 0.15625D;
-        }
+		EntityItem entityitem = new EntityItem(worldIn, d0, d1, d2, stack);
+		double d3 = worldIn.rand.nextDouble() * 0.1D + 0.2D;
+		entityitem.motionX = (double) facing.getFrontOffsetX() * d3;
+		entityitem.motionY = 0.20000000298023224D;
+		entityitem.motionZ = (double) facing.getFrontOffsetZ() * d3;
+		entityitem.motionX += worldIn.rand.nextGaussian() * 0.007499999832361937D * (double) speed;
+		entityitem.motionY += worldIn.rand.nextGaussian() * 0.007499999832361937D * (double) speed;
+		entityitem.motionZ += worldIn.rand.nextGaussian() * 0.007499999832361937D * (double) speed;
+		worldIn.spawnEntityInWorld(entityitem);
+	}
 
-        EntityItem var11 = new EntityItem(worldIn, var5, var7, var9, stack);
-        double var12 = worldIn.rand.nextDouble() * 0.1D + 0.2D;
-        var11.motionX = (double)p_82486_3_.getFrontOffsetX() * var12;
-        var11.motionY = 0.20000000298023224D;
-        var11.motionZ = (double)p_82486_3_.getFrontOffsetZ() * var12;
-        var11.motionX += worldIn.rand.nextGaussian() * 0.007499999832361937D * (double)speed;
-        var11.motionY += worldIn.rand.nextGaussian() * 0.007499999832361937D * (double)speed;
-        var11.motionZ += worldIn.rand.nextGaussian() * 0.007499999832361937D * (double)speed;
-        worldIn.spawnEntityInWorld(var11);
-    }
+	/**
+	 * Play the dispense sound from the specified block.
+	 */
+	protected void playDispenseSound(IBlockSource source) {
+		source.getWorld().playAuxSFX(1000, source.getBlockPos(), 0);
+	}
 
-    /**
-     * Play the dispense sound from the specified block.
-     */
-    protected void playDispenseSound(IBlockSource source)
-    {
-        source.getWorld().playAuxSFX(1000, source.getBlockPos(), 0);
-    }
+	/**
+	 * Order clients to display dispense particles from the specified block and
+	 * facing.
+	 */
+	protected void spawnDispenseParticles(IBlockSource source, EnumFacing facingIn) {
+		source.getWorld().playAuxSFX(2000, source.getBlockPos(), this.func_82488_a(facingIn));
+	}
 
-    /**
-     * Order clients to display dispense particles from the specified block and facing.
-     */
-    protected void spawnDispenseParticles(IBlockSource source, EnumFacing facingIn)
-    {
-        source.getWorld().playAuxSFX(2000, source.getBlockPos(), this.func_82488_a(facingIn));
-    }
-
-    private int func_82488_a(EnumFacing facingIn)
-    {
-        return facingIn.getFrontOffsetX() + 1 + (facingIn.getFrontOffsetZ() + 1) * 3;
-    }
+	private int func_82488_a(EnumFacing facingIn) {
+		return facingIn.getFrontOffsetX() + 1 + (facingIn.getFrontOffsetZ() + 1) * 3;
+	}
 }

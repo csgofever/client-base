@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -17,273 +18,201 @@ import net.minecraft.tileentity.TileEntityBanner;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockBanner extends BlockContainer
-{
-    public static final PropertyDirection FACING_PROP = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
-    public static final PropertyInteger ROTATION_PROP = PropertyInteger.create("rotation", 0, 15);
-    private static final String __OBFID = "CL_00002143";
+public class BlockBanner extends BlockContainer {
+	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyInteger ROTATION = PropertyInteger.create("rotation", 0, 15);
 
-    protected BlockBanner()
-    {
-        super(Material.wood);
-        float var1 = 0.25F;
-        float var2 = 1.0F;
-        this.setBlockBounds(0.5F - var1, 0.0F, 0.5F - var1, 0.5F + var1, var2, 0.5F + var1);
-    }
+	protected BlockBanner() {
+		super(Material.wood);
+		float f = 0.25F;
+		float f1 = 1.0F;
+		this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f1, 0.5F + f);
+	}
 
-    public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
-    {
-        return null;
-    }
+	/**
+	 * Gets the localized name of this block. Used for the statistics page.
+	 */
+	public String getLocalizedName() {
+		return StatCollector.translateToLocal("item.banner.white.name");
+	}
 
-    public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
-    {
-        this.setBlockBoundsBasedOnState(worldIn, pos);
-        return super.getSelectedBoundingBox(worldIn, pos);
-    }
+	public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state) {
+		return null;
+	}
 
-    public boolean isFullCube()
-    {
-        return false;
-    }
+	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
+		this.setBlockBoundsBasedOnState(worldIn, pos);
+		return super.getSelectedBoundingBox(worldIn, pos);
+	}
 
-    public boolean isPassable(IBlockAccess blockAccess, BlockPos pos)
-    {
-        return true;
-    }
+	public boolean isFullCube() {
+		return false;
+	}
 
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
+	public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
+		return true;
+	}
 
-    /**
-     * Returns a new instance of a block's tile entity class. Called on placing the block.
-     */
-    public TileEntity createNewTileEntity(World worldIn, int meta)
-    {
-        return new TileEntityBanner();
-    }
+	/**
+	 * Used to determine ambient occlusion and culling when rebuilding chunks for
+	 * render
+	 */
+	public boolean isOpaqueCube() {
+		return false;
+	}
 
-    /**
-     * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
-     */
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
-        return Items.banner;
-    }
+	public boolean func_181623_g() {
+		return true;
+	}
 
-    public Item getItem(World worldIn, BlockPos pos)
-    {
-        return Items.banner;
-    }
+	/**
+	 * Returns a new instance of a block's tile entity class. Called on placing the
+	 * block.
+	 */
+	public TileEntity createNewTileEntity(World worldIn, int meta) {
+		return new TileEntityBanner();
+	}
 
-    /**
-     * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
-     */
-    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
-    {
-        TileEntity var6 = worldIn.getTileEntity(pos);
+	/**
+	 * Get the Item that this Block should drop when harvested.
+	 */
+	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+		return Items.banner;
+	}
 
-        if (var6 instanceof TileEntityBanner)
-        {
-            ItemStack var7 = new ItemStack(Items.banner, 1, ((TileEntityBanner)var6).getBaseColor());
-            NBTTagCompound var8 = new NBTTagCompound();
-            var6.writeToNBT(var8);
-            var8.removeTag("x");
-            var8.removeTag("y");
-            var8.removeTag("z");
-            var8.removeTag("id");
-            var7.setTagInfo("BlockEntityTag", var8);
-            spawnAsEntity(worldIn, pos, var7);
-        }
-        else
-        {
-            super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
-        }
-    }
+	public Item getItem(World worldIn, BlockPos pos) {
+		return Items.banner;
+	}
 
-    public void harvestBlock(World worldIn, EntityPlayer playerIn, BlockPos pos, IBlockState state, TileEntity te)
-    {
-        if (te instanceof TileEntityBanner)
-        {
-            ItemStack var6 = new ItemStack(Items.banner, 1, ((TileEntityBanner)te).getBaseColor());
-            NBTTagCompound var7 = new NBTTagCompound();
-            te.writeToNBT(var7);
-            var7.removeTag("x");
-            var7.removeTag("y");
-            var7.removeTag("z");
-            var7.removeTag("id");
-            var6.setTagInfo("BlockEntityTag", var7);
-            spawnAsEntity(worldIn, pos, var6);
-        }
-        else
-        {
-            super.harvestBlock(worldIn, playerIn, pos, state, (TileEntity)null);
-        }
-    }
+	/**
+	 * Spawns this Block's drops into the World as EntityItems.
+	 */
+	public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+		TileEntity tileentity = worldIn.getTileEntity(pos);
 
-    public static class BlockBannerHanging extends BlockBanner
-    {
-        private static final String __OBFID = "CL_00002140";
+		if (tileentity instanceof TileEntityBanner) {
+			ItemStack itemstack = new ItemStack(Items.banner, 1, ((TileEntityBanner) tileentity).getBaseColor());
+			NBTTagCompound nbttagcompound = new NBTTagCompound();
+			tileentity.writeToNBT(nbttagcompound);
+			nbttagcompound.removeTag("x");
+			nbttagcompound.removeTag("y");
+			nbttagcompound.removeTag("z");
+			nbttagcompound.removeTag("id");
+			itemstack.setTagInfo("BlockEntityTag", nbttagcompound);
+			spawnAsEntity(worldIn, pos, itemstack);
+		} else {
+			super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
+		}
+	}
 
-        public BlockBannerHanging()
-        {
-            this.setDefaultState(this.blockState.getBaseState().withProperty(FACING_PROP, EnumFacing.NORTH));
-        }
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+		return !this.func_181087_e(worldIn, pos) && super.canPlaceBlockAt(worldIn, pos);
+	}
 
-        public void setBlockBoundsBasedOnState(IBlockAccess access, BlockPos pos)
-        {
-            EnumFacing var3 = (EnumFacing)access.getBlockState(pos).getValue(FACING_PROP);
-            float var4 = 0.0F;
-            float var5 = 0.78125F;
-            float var6 = 0.0F;
-            float var7 = 1.0F;
-            float var8 = 0.125F;
-            this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te) {
+		if (te instanceof TileEntityBanner) {
+			TileEntityBanner tileentitybanner = (TileEntityBanner) te;
+			ItemStack itemstack = new ItemStack(Items.banner, 1, ((TileEntityBanner) te).getBaseColor());
+			NBTTagCompound nbttagcompound = new NBTTagCompound();
+			TileEntityBanner.func_181020_a(nbttagcompound, tileentitybanner.getBaseColor(), tileentitybanner.func_181021_d());
+			itemstack.setTagInfo("BlockEntityTag", nbttagcompound);
+			spawnAsEntity(worldIn, pos, itemstack);
+		} else {
+			super.harvestBlock(worldIn, player, pos, state, (TileEntity) null);
+		}
+	}
 
-            switch (BlockBanner.SwitchEnumFacing.SWITCH_MAP[var3.ordinal()])
-            {
-                case 1:
-                default:
-                    this.setBlockBounds(var6, var4, 1.0F - var8, var7, var5, 1.0F);
-                    break;
+	public static class BlockBannerHanging extends BlockBanner {
+		public BlockBannerHanging() {
+			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		}
 
-                case 2:
-                    this.setBlockBounds(var6, var4, 0.0F, var7, var5, var8);
-                    break;
+		public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
+			EnumFacing enumfacing = (EnumFacing) worldIn.getBlockState(pos).getValue(FACING);
+			float f = 0.0F;
+			float f1 = 0.78125F;
+			float f2 = 0.0F;
+			float f3 = 1.0F;
+			float f4 = 0.125F;
+			this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-                case 3:
-                    this.setBlockBounds(1.0F - var8, var4, var6, 1.0F, var5, var7);
-                    break;
+			switch (enumfacing) {
+			case NORTH:
+			default:
+				this.setBlockBounds(f2, f, 1.0F - f4, f3, f1, 1.0F);
+				break;
 
-                case 4:
-                    this.setBlockBounds(0.0F, var4, var6, var8, var5, var7);
-            }
-        }
+			case SOUTH:
+				this.setBlockBounds(f2, f, 0.0F, f3, f1, f4);
+				break;
 
-        public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
-        {
-            EnumFacing var5 = (EnumFacing)state.getValue(FACING_PROP);
+			case WEST:
+				this.setBlockBounds(1.0F - f4, f, f2, 1.0F, f1, f3);
+				break;
 
-            if (!worldIn.getBlockState(pos.offset(var5.getOpposite())).getBlock().getMaterial().isSolid())
-            {
-                this.dropBlockAsItem(worldIn, pos, state, 0);
-                worldIn.setBlockToAir(pos);
-            }
+			case EAST:
+				this.setBlockBounds(0.0F, f, f2, f4, f1, f3);
+			}
+		}
 
-            super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
-        }
+		public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
+			EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
 
-        public IBlockState getStateFromMeta(int meta)
-        {
-            EnumFacing var2 = EnumFacing.getFront(meta);
+			if (!worldIn.getBlockState(pos.offset(enumfacing.getOpposite())).getBlock().getMaterial().isSolid()) {
+				this.dropBlockAsItem(worldIn, pos, state, 0);
+				worldIn.setBlockToAir(pos);
+			}
 
-            if (var2.getAxis() == EnumFacing.Axis.Y)
-            {
-                var2 = EnumFacing.NORTH;
-            }
+			super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
+		}
 
-            return this.getDefaultState().withProperty(FACING_PROP, var2);
-        }
+		public IBlockState getStateFromMeta(int meta) {
+			EnumFacing enumfacing = EnumFacing.getFront(meta);
 
-        public int getMetaFromState(IBlockState state)
-        {
-            return ((EnumFacing)state.getValue(FACING_PROP)).getIndex();
-        }
+			if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
+				enumfacing = EnumFacing.NORTH;
+			}
 
-        protected BlockState createBlockState()
-        {
-            return new BlockState(this, new IProperty[] {FACING_PROP});
-        }
-    }
+			return this.getDefaultState().withProperty(FACING, enumfacing);
+		}
 
-    public static class BlockBannerStanding extends BlockBanner
-    {
-        private static final String __OBFID = "CL_00002141";
+		public int getMetaFromState(IBlockState state) {
+			return ((EnumFacing) state.getValue(FACING)).getIndex();
+		}
 
-        public BlockBannerStanding()
-        {
-            this.setDefaultState(this.blockState.getBaseState().withProperty(ROTATION_PROP, Integer.valueOf(0)));
-        }
+		protected BlockState createBlockState() {
+			return new BlockState(this, new IProperty[] { FACING });
+		}
+	}
 
-        public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
-        {
-            if (!worldIn.getBlockState(pos.offsetDown()).getBlock().getMaterial().isSolid())
-            {
-                this.dropBlockAsItem(worldIn, pos, state, 0);
-                worldIn.setBlockToAir(pos);
-            }
+	public static class BlockBannerStanding extends BlockBanner {
+		public BlockBannerStanding() {
+			this.setDefaultState(this.blockState.getBaseState().withProperty(ROTATION, Integer.valueOf(0)));
+		}
 
-            super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
-        }
+		public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
+			if (!worldIn.getBlockState(pos.down()).getBlock().getMaterial().isSolid()) {
+				this.dropBlockAsItem(worldIn, pos, state, 0);
+				worldIn.setBlockToAir(pos);
+			}
 
-        public IBlockState getStateFromMeta(int meta)
-        {
-            return this.getDefaultState().withProperty(ROTATION_PROP, Integer.valueOf(meta));
-        }
+			super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
+		}
 
-        public int getMetaFromState(IBlockState state)
-        {
-            return ((Integer)state.getValue(ROTATION_PROP)).intValue();
-        }
+		public IBlockState getStateFromMeta(int meta) {
+			return this.getDefaultState().withProperty(ROTATION, Integer.valueOf(meta));
+		}
 
-        protected BlockState createBlockState()
-        {
-            return new BlockState(this, new IProperty[] {ROTATION_PROP});
-        }
-    }
+		public int getMetaFromState(IBlockState state) {
+			return ((Integer) state.getValue(ROTATION)).intValue();
+		}
 
-    static final class SwitchEnumFacing
-    {
-        static final int[] SWITCH_MAP = new int[EnumFacing.values().length];
-        private static final String __OBFID = "CL_00002142";
-
-        static
-        {
-            try
-            {
-                SWITCH_MAP[EnumFacing.NORTH.ordinal()] = 1;
-            }
-            catch (NoSuchFieldError var4)
-            {
-                ;
-            }
-
-            try
-            {
-                SWITCH_MAP[EnumFacing.SOUTH.ordinal()] = 2;
-            }
-            catch (NoSuchFieldError var3)
-            {
-                ;
-            }
-
-            try
-            {
-                SWITCH_MAP[EnumFacing.WEST.ordinal()] = 3;
-            }
-            catch (NoSuchFieldError var2)
-            {
-                ;
-            }
-
-            try
-            {
-                SWITCH_MAP[EnumFacing.EAST.ordinal()] = 4;
-            }
-            catch (NoSuchFieldError var1)
-            {
-                ;
-            }
-        }
-    }
+		protected BlockState createBlockState() {
+			return new BlockState(this, new IProperty[] { ROTATION });
+		}
+	}
 }

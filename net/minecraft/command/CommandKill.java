@@ -1,51 +1,57 @@
 package net.minecraft.command;
 
+import java.util.List;
+
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 
-public class CommandKill extends CommandBase
-{
-    private static final String __OBFID = "CL_00000570";
+public class CommandKill extends CommandBase {
+	/**
+	 * Gets the name of the command
+	 */
+	public String getCommandName() {
+		return "kill";
+	}
 
-    public String getCommandName()
-    {
-        return "kill";
-    }
+	/**
+	 * Return the required permission level for this command.
+	 */
+	public int getRequiredPermissionLevel() {
+		return 2;
+	}
 
-    /**
-     * Return the required permission level for this command.
-     */
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
-    }
+	/**
+	 * Gets the usage string for the command.
+	 */
+	public String getCommandUsage(ICommandSender sender) {
+		return "commands.kill.usage";
+	}
 
-    public String getCommandUsage(ICommandSender sender)
-    {
-        return "commands.kill.usage";
-    }
+	/**
+	 * Callback when the command is invoked
+	 */
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		if (args.length == 0) {
+			EntityPlayer entityplayer = getCommandSenderAsPlayer(sender);
+			entityplayer.onKillCommand();
+			notifyOperators(sender, this, "commands.kill.successful", new Object[] { entityplayer.getDisplayName() });
+		} else {
+			Entity entity = func_175768_b(sender, args[0]);
+			entity.onKillCommand();
+			notifyOperators(sender, this, "commands.kill.successful", new Object[] { entity.getDisplayName() });
+		}
+	}
 
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException
-    {
-        if (args.length == 0)
-        {
-            EntityPlayerMP var4 = getCommandSenderAsPlayer(sender);
-            var4.func_174812_G();
-            notifyOperators(sender, this, "commands.kill.successful", new Object[] {var4.getDisplayName()});
-        }
-        else
-        {
-            Entity var3 = func_175768_b(sender, args[0]);
-            var3.func_174812_G();
-            notifyOperators(sender, this, "commands.kill.successful", new Object[] {var3.getDisplayName()});
-        }
-    }
+	/**
+	 * Return whether the specified command parameter index is a username parameter.
+	 */
+	public boolean isUsernameIndex(String[] args, int index) {
+		return index == 0;
+	}
 
-    /**
-     * Return whether the specified command parameter index is a username parameter.
-     */
-    public boolean isUsernameIndex(String[] args, int index)
-    {
-        return index == 0;
-    }
+	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+		return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : null;
+	}
 }

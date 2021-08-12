@@ -1,33 +1,28 @@
 package net.minecraft.client.audio;
 
-import com.google.common.collect.Maps;
 import java.util.Map;
+
+import com.google.common.collect.Maps;
+
 import net.minecraft.util.RegistrySimple;
+import net.minecraft.util.ResourceLocation;
 
-public class SoundRegistry extends RegistrySimple
-{
-    private Map field_148764_a;
-    private static final String __OBFID = "CL_00001151";
+public class SoundRegistry extends RegistrySimple<ResourceLocation, SoundEventAccessorComposite> {
+	private Map<ResourceLocation, SoundEventAccessorComposite> soundRegistry;
 
-    /**
-     * Creates the Map we will use to map keys to their registered values.
-     */
-    protected Map createUnderlyingMap()
-    {
-        this.field_148764_a = Maps.newHashMap();
-        return this.field_148764_a;
-    }
+	protected Map<ResourceLocation, SoundEventAccessorComposite> createUnderlyingMap() {
+		this.soundRegistry = Maps.<ResourceLocation, SoundEventAccessorComposite>newHashMap();
+		return this.soundRegistry;
+	}
 
-    public void registerSound(SoundEventAccessorComposite p_148762_1_)
-    {
-        this.putObject(p_148762_1_.getSoundEventLocation(), p_148762_1_);
-    }
+	public void registerSound(SoundEventAccessorComposite p_148762_1_) {
+		this.putObject(p_148762_1_.getSoundEventLocation(), p_148762_1_);
+	}
 
-    /**
-     * Reset the underlying sound map (Called on resource manager reload)
-     */
-    public void clearMap()
-    {
-        this.field_148764_a.clear();
-    }
+	/**
+	 * Reset the underlying sound map (Called on resource manager reload)
+	 */
+	public void clearMap() {
+		this.soundRegistry.clear();
+	}
 }

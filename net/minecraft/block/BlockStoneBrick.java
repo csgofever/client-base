@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -11,126 +12,98 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
 
-public class BlockStoneBrick extends Block
-{
-    public static final PropertyEnum VARIANT_PROP = PropertyEnum.create("variant", BlockStoneBrick.EnumType.class);
-    public static final int DEFAULT_META = BlockStoneBrick.EnumType.DEFAULT.getMetaFromState();
-    public static final int MOSSY_META = BlockStoneBrick.EnumType.MOSSY.getMetaFromState();
-    public static final int CRACKED_META = BlockStoneBrick.EnumType.CRACKED.getMetaFromState();
-    public static final int CHISELED_META = BlockStoneBrick.EnumType.CHISELED.getMetaFromState();
-    private static final String __OBFID = "CL_00000318";
+public class BlockStoneBrick extends Block {
+	public static final PropertyEnum<BlockStoneBrick.EnumType> VARIANT = PropertyEnum.<BlockStoneBrick.EnumType>create("variant", BlockStoneBrick.EnumType.class);
+	public static final int DEFAULT_META = BlockStoneBrick.EnumType.DEFAULT.getMetadata();
+	public static final int MOSSY_META = BlockStoneBrick.EnumType.MOSSY.getMetadata();
+	public static final int CRACKED_META = BlockStoneBrick.EnumType.CRACKED.getMetadata();
+	public static final int CHISELED_META = BlockStoneBrick.EnumType.CHISELED.getMetadata();
 
-    public BlockStoneBrick()
-    {
-        super(Material.rock);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT_PROP, BlockStoneBrick.EnumType.DEFAULT));
-        this.setCreativeTab(CreativeTabs.tabBlock);
-    }
+	public BlockStoneBrick() {
+		super(Material.rock);
+		this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockStoneBrick.EnumType.DEFAULT));
+		this.setCreativeTab(CreativeTabs.tabBlock);
+	}
 
-    /**
-     * Get the damage value that this Block should drop
-     */
-    public int damageDropped(IBlockState state)
-    {
-        return ((BlockStoneBrick.EnumType)state.getValue(VARIANT_PROP)).getMetaFromState();
-    }
+	/**
+	 * Gets the metadata of the item this Block can drop. This method is called when
+	 * the block gets destroyed. It returns the metadata of the dropped item based
+	 * on the old metadata of the block.
+	 */
+	public int damageDropped(IBlockState state) {
+		return ((BlockStoneBrick.EnumType) state.getValue(VARIANT)).getMetadata();
+	}
 
-    /**
-     * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
-     */
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list)
-    {
-        BlockStoneBrick.EnumType[] var4 = BlockStoneBrick.EnumType.values();
-        int var5 = var4.length;
+	/**
+	 * returns a list of blocks with the same ID, but different meta (eg: wood
+	 * returns 4 blocks)
+	 */
+	public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
+		for (BlockStoneBrick.EnumType blockstonebrick$enumtype : BlockStoneBrick.EnumType.values()) {
+			list.add(new ItemStack(itemIn, 1, blockstonebrick$enumtype.getMetadata()));
+		}
+	}
 
-        for (int var6 = 0; var6 < var5; ++var6)
-        {
-            BlockStoneBrick.EnumType var7 = var4[var6];
-            list.add(new ItemStack(itemIn, 1, var7.getMetaFromState()));
-        }
-    }
+	/**
+	 * Convert the given metadata into a BlockState for this Block
+	 */
+	public IBlockState getStateFromMeta(int meta) {
+		return this.getDefaultState().withProperty(VARIANT, BlockStoneBrick.EnumType.byMetadata(meta));
+	}
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     */
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.getDefaultState().withProperty(VARIANT_PROP, BlockStoneBrick.EnumType.getStateFromMeta(meta));
-    }
+	/**
+	 * Convert the BlockState into the correct metadata value
+	 */
+	public int getMetaFromState(IBlockState state) {
+		return ((BlockStoneBrick.EnumType) state.getValue(VARIANT)).getMetadata();
+	}
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((BlockStoneBrick.EnumType)state.getValue(VARIANT_PROP)).getMetaFromState();
-    }
+	protected BlockState createBlockState() {
+		return new BlockState(this, new IProperty[] { VARIANT });
+	}
 
-    protected BlockState createBlockState()
-    {
-        return new BlockState(this, new IProperty[] {VARIANT_PROP});
-    }
+	public static enum EnumType implements IStringSerializable {
+		DEFAULT(0, "stonebrick", "default"), MOSSY(1, "mossy_stonebrick", "mossy"), CRACKED(2, "cracked_stonebrick", "cracked"), CHISELED(3, "chiseled_stonebrick", "chiseled");
 
-    public static enum EnumType implements IStringSerializable
-    {
-        DEFAULT("DEFAULT", 0, 0, "stonebrick", "default"),
-        MOSSY("MOSSY", 1, 1, "mossy_stonebrick", "mossy"),
-        CRACKED("CRACKED", 2, 2, "cracked_stonebrick", "cracked"),
-        CHISELED("CHISELED", 3, 3, "chiseled_stonebrick", "chiseled");
-        private static final BlockStoneBrick.EnumType[] TYPES_ARRAY = new BlockStoneBrick.EnumType[values().length];
-        private final int field_176615_f;
-        private final String field_176616_g;
-        private final String field_176622_h;
+		private static final BlockStoneBrick.EnumType[] META_LOOKUP = new BlockStoneBrick.EnumType[values().length];
+		private final int meta;
+		private final String name;
+		private final String unlocalizedName;
 
-        private static final BlockStoneBrick.EnumType[] $VALUES = new BlockStoneBrick.EnumType[]{DEFAULT, MOSSY, CRACKED, CHISELED};
-        private static final String __OBFID = "CL_00002057";
+		private EnumType(int meta, String name, String unlocalizedName) {
+			this.meta = meta;
+			this.name = name;
+			this.unlocalizedName = unlocalizedName;
+		}
 
-        private EnumType(String p_i45679_1_, int p_i45679_2_, int p_i45679_3_, String p_i45679_4_, String p_i45679_5_)
-        {
-            this.field_176615_f = p_i45679_3_;
-            this.field_176616_g = p_i45679_4_;
-            this.field_176622_h = p_i45679_5_;
-        }
+		public int getMetadata() {
+			return this.meta;
+		}
 
-        public int getMetaFromState()
-        {
-            return this.field_176615_f;
-        }
+		public String toString() {
+			return this.name;
+		}
 
-        public String toString()
-        {
-            return this.field_176616_g;
-        }
+		public static BlockStoneBrick.EnumType byMetadata(int meta) {
+			if (meta < 0 || meta >= META_LOOKUP.length) {
+				meta = 0;
+			}
 
-        public static BlockStoneBrick.EnumType getStateFromMeta(int p_176613_0_)
-        {
-            if (p_176613_0_ < 0 || p_176613_0_ >= TYPES_ARRAY.length)
-            {
-                p_176613_0_ = 0;
-            }
+			return META_LOOKUP[meta];
+		}
 
-            return TYPES_ARRAY[p_176613_0_];
-        }
+		public String getName() {
+			return this.name;
+		}
 
-        public String getName()
-        {
-            return this.field_176616_g;
-        }
+		public String getUnlocalizedName() {
+			return this.unlocalizedName;
+		}
 
-        public String getVariantName()
-        {
-            return this.field_176622_h;
-        }
-
-        static {
-            BlockStoneBrick.EnumType[] var0 = values();
-            int var1 = var0.length;
-
-            for (int var2 = 0; var2 < var1; ++var2)
-            {
-                BlockStoneBrick.EnumType var3 = var0[var2];
-                TYPES_ARRAY[var3.getMetaFromState()] = var3;
-            }
-        }
-    }
+		static {
+			for (BlockStoneBrick.EnumType blockstonebrick$enumtype : values()) {
+				META_LOOKUP[blockstonebrick$enumtype.getMetadata()] = blockstonebrick$enumtype;
+			}
+		}
+	}
 }

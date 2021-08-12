@@ -1,70 +1,52 @@
 package net.minecraft.server.management;
 
+import java.io.File;
+
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import java.io.File;
-import java.util.Iterator;
 
-public class UserListOps extends UserList
-{
-    private static final String __OBFID = "CL_00001879";
+public class UserListOps extends UserList<GameProfile, UserListOpsEntry> {
+	public UserListOps(File saveFile) {
+		super(saveFile);
+	}
 
-    public UserListOps(File p_i1152_1_)
-    {
-        super(p_i1152_1_);
-    }
+	protected UserListEntry<GameProfile> createEntry(JsonObject entryData) {
+		return new UserListOpsEntry(entryData);
+	}
 
-    protected UserListEntry createEntry(JsonObject entryData)
-    {
-        return new UserListOpsEntry(entryData);
-    }
+	public String[] getKeys() {
+		String[] astring = new String[this.getValues().size()];
+		int i = 0;
 
-    public String[] getKeys()
-    {
-        String[] var1 = new String[this.getValues().size()];
-        int var2 = 0;
-        UserListOpsEntry var4;
+		for (UserListOpsEntry userlistopsentry : this.getValues().values()) {
+			astring[i++] = ((GameProfile) userlistopsentry.getValue()).getName();
+		}
 
-        for (Iterator var3 = this.getValues().values().iterator(); var3.hasNext(); var1[var2++] = ((GameProfile)var4.getValue()).getName())
-        {
-            var4 = (UserListOpsEntry)var3.next();
-        }
+		return astring;
+	}
 
-        return var1;
-    }
+	public boolean func_183026_b(GameProfile p_183026_1_) {
+		UserListOpsEntry userlistopsentry = (UserListOpsEntry) this.getEntry(p_183026_1_);
+		return userlistopsentry != null ? userlistopsentry.func_183024_b() : false;
+	}
 
-    protected String func_152699_b(GameProfile p_152699_1_)
-    {
-        return p_152699_1_.getId().toString();
-    }
+	/**
+	 * Gets the key value for the given object
+	 */
+	protected String getObjectKey(GameProfile obj) {
+		return obj.getId().toString();
+	}
 
-    /**
-     * Gets the GameProfile of based on the provided username.
-     */
-    public GameProfile getGameProfileFromName(String p_152700_1_)
-    {
-        Iterator var2 = this.getValues().values().iterator();
-        UserListOpsEntry var3;
+	/**
+	 * Gets the GameProfile of based on the provided username.
+	 */
+	public GameProfile getGameProfileFromName(String username) {
+		for (UserListOpsEntry userlistopsentry : this.getValues().values()) {
+			if (username.equalsIgnoreCase(((GameProfile) userlistopsentry.getValue()).getName())) {
+				return (GameProfile) userlistopsentry.getValue();
+			}
+		}
 
-        do
-        {
-            if (!var2.hasNext())
-            {
-                return null;
-            }
-
-            var3 = (UserListOpsEntry)var2.next();
-        }
-        while (!p_152700_1_.equalsIgnoreCase(((GameProfile)var3.getValue()).getName()));
-
-        return (GameProfile)var3.getValue();
-    }
-
-    /**
-     * Gets the key value for the given object
-     */
-    protected String getObjectKey(Object obj)
-    {
-        return this.func_152699_b((GameProfile)obj);
-    }
+		return null;
+	}
 }

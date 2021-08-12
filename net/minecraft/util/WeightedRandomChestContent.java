@@ -1,97 +1,81 @@
 package net.minecraft.util;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import com.google.common.collect.Lists;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityDispenser;
 
-public class WeightedRandomChestContent extends WeightedRandom.Item
-{
-    /** The Item/Block ID to generate in the Chest. */
-    private ItemStack theItemId;
+public class WeightedRandomChestContent extends WeightedRandom.Item {
+	/** The Item/Block ID to generate in the Chest. */
+	private ItemStack theItemId;
 
-    /** The minimum chance of item generating. */
-    private int theMinimumChanceToGenerateItem;
+	/** The minimum stack size of generated item. */
+	private int minStackSize;
 
-    /** The maximum chance of item generating. */
-    private int theMaximumChanceToGenerateItem;
-    private static final String __OBFID = "CL_00001505";
+	/** The maximum stack size of generated item. */
+	private int maxStackSize;
 
-    public WeightedRandomChestContent(Item p_i45311_1_, int p_i45311_2_, int p_i45311_3_, int p_i45311_4_, int p_i45311_5_)
-    {
-        super(p_i45311_5_);
-        this.theItemId = new ItemStack(p_i45311_1_, 1, p_i45311_2_);
-        this.theMinimumChanceToGenerateItem = p_i45311_3_;
-        this.theMaximumChanceToGenerateItem = p_i45311_4_;
-    }
+	public WeightedRandomChestContent(Item p_i45311_1_, int p_i45311_2_, int minimumChance, int maximumChance, int itemWeightIn) {
+		super(itemWeightIn);
+		this.theItemId = new ItemStack(p_i45311_1_, 1, p_i45311_2_);
+		this.minStackSize = minimumChance;
+		this.maxStackSize = maximumChance;
+	}
 
-    public WeightedRandomChestContent(ItemStack p_i1558_1_, int p_i1558_2_, int p_i1558_3_, int p_i1558_4_)
-    {
-        super(p_i1558_4_);
-        this.theItemId = p_i1558_1_;
-        this.theMinimumChanceToGenerateItem = p_i1558_2_;
-        this.theMaximumChanceToGenerateItem = p_i1558_3_;
-    }
+	public WeightedRandomChestContent(ItemStack stack, int minimumChance, int maximumChance, int itemWeightIn) {
+		super(itemWeightIn);
+		this.theItemId = stack;
+		this.minStackSize = minimumChance;
+		this.maxStackSize = maximumChance;
+	}
 
-    public static void generateChestContents(Random p_177630_0_, List p_177630_1_, IInventory p_177630_2_, int p_177630_3_)
-    {
-        for (int var4 = 0; var4 < p_177630_3_; ++var4)
-        {
-            WeightedRandomChestContent var5 = (WeightedRandomChestContent)WeightedRandom.getRandomItem(p_177630_0_, p_177630_1_);
-            int var6 = var5.theMinimumChanceToGenerateItem + p_177630_0_.nextInt(var5.theMaximumChanceToGenerateItem - var5.theMinimumChanceToGenerateItem + 1);
+	public static void generateChestContents(Random random, List<WeightedRandomChestContent> listIn, IInventory inv, int max) {
+		for (int i = 0; i < max; ++i) {
+			WeightedRandomChestContent weightedrandomchestcontent = (WeightedRandomChestContent) WeightedRandom.getRandomItem(random, listIn);
+			int j = weightedrandomchestcontent.minStackSize + random.nextInt(weightedrandomchestcontent.maxStackSize - weightedrandomchestcontent.minStackSize + 1);
 
-            if (var5.theItemId.getMaxStackSize() >= var6)
-            {
-                ItemStack var7 = var5.theItemId.copy();
-                var7.stackSize = var6;
-                p_177630_2_.setInventorySlotContents(p_177630_0_.nextInt(p_177630_2_.getSizeInventory()), var7);
-            }
-            else
-            {
-                for (int var9 = 0; var9 < var6; ++var9)
-                {
-                    ItemStack var8 = var5.theItemId.copy();
-                    var8.stackSize = 1;
-                    p_177630_2_.setInventorySlotContents(p_177630_0_.nextInt(p_177630_2_.getSizeInventory()), var8);
-                }
-            }
-        }
-    }
+			if (weightedrandomchestcontent.theItemId.getMaxStackSize() >= j) {
+				ItemStack itemstack1 = weightedrandomchestcontent.theItemId.copy();
+				itemstack1.stackSize = j;
+				inv.setInventorySlotContents(random.nextInt(inv.getSizeInventory()), itemstack1);
+			} else {
+				for (int k = 0; k < j; ++k) {
+					ItemStack itemstack = weightedrandomchestcontent.theItemId.copy();
+					itemstack.stackSize = 1;
+					inv.setInventorySlotContents(random.nextInt(inv.getSizeInventory()), itemstack);
+				}
+			}
+		}
+	}
 
-    public static void func_177631_a(Random p_177631_0_, List p_177631_1_, TileEntityDispenser p_177631_2_, int p_177631_3_)
-    {
-        for (int var4 = 0; var4 < p_177631_3_; ++var4)
-        {
-            WeightedRandomChestContent var5 = (WeightedRandomChestContent)WeightedRandom.getRandomItem(p_177631_0_, p_177631_1_);
-            int var6 = var5.theMinimumChanceToGenerateItem + p_177631_0_.nextInt(var5.theMaximumChanceToGenerateItem - var5.theMinimumChanceToGenerateItem + 1);
+	public static void generateDispenserContents(Random random, List<WeightedRandomChestContent> listIn, TileEntityDispenser dispenser, int max) {
+		for (int i = 0; i < max; ++i) {
+			WeightedRandomChestContent weightedrandomchestcontent = (WeightedRandomChestContent) WeightedRandom.getRandomItem(random, listIn);
+			int j = weightedrandomchestcontent.minStackSize + random.nextInt(weightedrandomchestcontent.maxStackSize - weightedrandomchestcontent.minStackSize + 1);
 
-            if (var5.theItemId.getMaxStackSize() >= var6)
-            {
-                ItemStack var7 = var5.theItemId.copy();
-                var7.stackSize = var6;
-                p_177631_2_.setInventorySlotContents(p_177631_0_.nextInt(p_177631_2_.getSizeInventory()), var7);
-            }
-            else
-            {
-                for (int var9 = 0; var9 < var6; ++var9)
-                {
-                    ItemStack var8 = var5.theItemId.copy();
-                    var8.stackSize = 1;
-                    p_177631_2_.setInventorySlotContents(p_177631_0_.nextInt(p_177631_2_.getSizeInventory()), var8);
-                }
-            }
-        }
-    }
+			if (weightedrandomchestcontent.theItemId.getMaxStackSize() >= j) {
+				ItemStack itemstack1 = weightedrandomchestcontent.theItemId.copy();
+				itemstack1.stackSize = j;
+				dispenser.setInventorySlotContents(random.nextInt(dispenser.getSizeInventory()), itemstack1);
+			} else {
+				for (int k = 0; k < j; ++k) {
+					ItemStack itemstack = weightedrandomchestcontent.theItemId.copy();
+					itemstack.stackSize = 1;
+					dispenser.setInventorySlotContents(random.nextInt(dispenser.getSizeInventory()), itemstack);
+				}
+			}
+		}
+	}
 
-    public static List func_177629_a(List p_177629_0_, WeightedRandomChestContent ... p_177629_1_)
-    {
-        ArrayList var2 = Lists.newArrayList(p_177629_0_);
-        Collections.addAll(var2, p_177629_1_);
-        return var2;
-    }
+	public static List<WeightedRandomChestContent> func_177629_a(List<WeightedRandomChestContent> p_177629_0_, WeightedRandomChestContent... p_177629_1_) {
+		List<WeightedRandomChestContent> list = Lists.newArrayList(p_177629_0_);
+		Collections.addAll(list, p_177629_1_);
+		return list;
+	}
 }

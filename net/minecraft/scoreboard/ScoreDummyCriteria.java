@@ -2,34 +2,29 @@ package net.minecraft.scoreboard;
 
 import java.util.List;
 
-public class ScoreDummyCriteria implements IScoreObjectiveCriteria
-{
-    private final String field_96644_g;
-    private static final String __OBFID = "CL_00000622";
+import net.minecraft.entity.player.EntityPlayer;
 
-    public ScoreDummyCriteria(String p_i2311_1_)
-    {
-        this.field_96644_g = p_i2311_1_;
-        IScoreObjectiveCriteria.INSTANCES.put(p_i2311_1_, this);
-    }
+public class ScoreDummyCriteria implements IScoreObjectiveCriteria {
+	private final String dummyName;
 
-    public String getName()
-    {
-        return this.field_96644_g;
-    }
+	public ScoreDummyCriteria(String name) {
+		this.dummyName = name;
+		IScoreObjectiveCriteria.INSTANCES.put(name, this);
+	}
 
-    public int func_96635_a(List p_96635_1_)
-    {
-        return 0;
-    }
+	public String getName() {
+		return this.dummyName;
+	}
 
-    public boolean isReadOnly()
-    {
-        return false;
-    }
+	public int func_96635_a(List<EntityPlayer> p_96635_1_) {
+		return 0;
+	}
 
-    public IScoreObjectiveCriteria.EnumRenderType func_178790_c()
-    {
-        return IScoreObjectiveCriteria.EnumRenderType.INTEGER;
-    }
+	public boolean isReadOnly() {
+		return false;
+	}
+
+	public IScoreObjectiveCriteria.EnumRenderType getRenderType() {
+		return IScoreObjectiveCriteria.EnumRenderType.INTEGER;
+	}
 }

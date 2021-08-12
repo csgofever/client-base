@@ -6,37 +6,57 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-public interface ICommandSender
-{
-    /**
-     * Gets the name of this command sender (usually username, but possibly "Rcon")
-     */
-    String getName();
+public interface ICommandSender {
+	/**
+	 * Gets the name of this command sender (usually username, but possibly "Rcon")
+	 */
+	String getName();
 
-    IChatComponent getDisplayName();
+	/**
+	 * Get the formatted ChatComponent that will be used for the sender's username
+	 * in chat
+	 */
+	IChatComponent getDisplayName();
 
-    /**
-     * Notifies this sender of some sort of information.  This is for messages intended to display to the user.  Used
-     * for typical output (like "you asked for whether or not this game rule is set, so here's your answer"), warnings
-     * (like "I fetched this block for you by ID, but I'd like you to know that every time you do this, I die a little
-     * inside"), and errors (like "it's not called iron_pixacke, silly").
-     */
-    void addChatMessage(IChatComponent var1);
+	/**
+	 * Send a chat message to the CommandSender
+	 */
+	void addChatMessage(IChatComponent component);
 
-    /**
-     * Returns true if the command sender is allowed to use the given command.
-     */
-    boolean canCommandSenderUseCommand(int var1, String var2);
+	/**
+	 * Returns {@code true} if the CommandSender is allowed to execute the command,
+	 * {@code false} if not
+	 */
+	boolean canCommandSenderUseCommand(int permLevel, String commandName);
 
-    BlockPos getPosition();
+	/**
+	 * Get the position in the world. <b>{@code null} is not allowed!</b> If you are
+	 * not an entity in the world, return the coordinates 0, 0, 0
+	 */
+	BlockPos getPosition();
 
-    Vec3 getPositionVector();
+	/**
+	 * Get the position vector. <b>{@code null} is not allowed!</b> If you are not
+	 * an entity in the world, return 0.0D, 0.0D, 0.0D
+	 */
+	Vec3 getPositionVector();
 
-    World getEntityWorld();
+	/**
+	 * Get the world, if available. <b>{@code null} is not allowed!</b> If you are
+	 * not an entity in the world, return the overworld
+	 */
+	World getEntityWorld();
 
-    Entity getCommandSenderEntity();
+	/**
+	 * Returns the entity associated with the command sender. MAY BE NULL!
+	 */
+	Entity getCommandSenderEntity();
 
-    boolean sendCommandFeedback();
+	/**
+	 * Returns true if the command sender should be sent feedback about executed
+	 * commands
+	 */
+	boolean sendCommandFeedback();
 
-    void func_174794_a(CommandResultStats.Type var1, int var2);
+	void setCommandStat(CommandResultStats.Type type, int amount);
 }

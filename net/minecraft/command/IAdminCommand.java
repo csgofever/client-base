@@ -1,6 +1,8 @@
 package net.minecraft.command;
 
-public interface IAdminCommand
-{
-    void notifyOperators(ICommandSender var1, ICommand var2, int var3, String var4, Object ... var5);
+public interface IAdminCommand {
+	/**
+	 * Send an informative message to the server operators
+	 */
+	void notifyOperators(ICommandSender sender, ICommand command, int flags, String msgFormat, Object... msgParams);
 }

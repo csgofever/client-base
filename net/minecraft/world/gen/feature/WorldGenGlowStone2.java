@@ -1,63 +1,45 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.Random;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class WorldGenGlowStone2 extends WorldGenerator
-{
-    private static final String __OBFID = "CL_00000413";
+public class WorldGenGlowStone2 extends WorldGenerator {
+	public boolean generate(World worldIn, Random rand, BlockPos position) {
+		if (!worldIn.isAirBlock(position)) {
+			return false;
+		} else if (worldIn.getBlockState(position.up()).getBlock() != Blocks.netherrack) {
+			return false;
+		} else {
+			worldIn.setBlockState(position, Blocks.glowstone.getDefaultState(), 2);
 
-    public boolean generate(World worldIn, Random p_180709_2_, BlockPos p_180709_3_)
-    {
-        if (!worldIn.isAirBlock(p_180709_3_))
-        {
-            return false;
-        }
-        else if (worldIn.getBlockState(p_180709_3_.offsetUp()).getBlock() != Blocks.netherrack)
-        {
-            return false;
-        }
-        else
-        {
-            worldIn.setBlockState(p_180709_3_, Blocks.glowstone.getDefaultState(), 2);
+			for (int i = 0; i < 1500; ++i) {
+				BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), -rand.nextInt(12), rand.nextInt(8) - rand.nextInt(8));
 
-            for (int var4 = 0; var4 < 1500; ++var4)
-            {
-                BlockPos var5 = p_180709_3_.add(p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8), p_180709_2_.nextInt(12), p_180709_2_.nextInt(8) - p_180709_2_.nextInt(8));
+				if (worldIn.getBlockState(blockpos).getBlock().getMaterial() == Material.air) {
+					int j = 0;
 
-                if (worldIn.getBlockState(var5).getBlock().getMaterial() == Material.air)
-                {
-                    int var6 = 0;
-                    EnumFacing[] var7 = EnumFacing.values();
-                    int var8 = var7.length;
+					for (EnumFacing enumfacing : EnumFacing.values()) {
+						if (worldIn.getBlockState(blockpos.offset(enumfacing)).getBlock() == Blocks.glowstone) {
+							++j;
+						}
 
-                    for (int var9 = 0; var9 < var8; ++var9)
-                    {
-                        EnumFacing var10 = var7[var9];
+						if (j > 1) {
+							break;
+						}
+					}
 
-                        if (worldIn.getBlockState(var5.offset(var10)).getBlock() == Blocks.glowstone)
-                        {
-                            ++var6;
-                        }
+					if (j == 1) {
+						worldIn.setBlockState(blockpos, Blocks.glowstone.getDefaultState(), 2);
+					}
+				}
+			}
 
-                        if (var6 > 1)
-                        {
-                            break;
-                        }
-                    }
-
-                    if (var6 == 1)
-                    {
-                        worldIn.setBlockState(var5, Blocks.glowstone.getDefaultState(), 2);
-                    }
-                }
-            }
-
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 }

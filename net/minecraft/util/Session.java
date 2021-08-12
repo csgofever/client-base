@@ -1,97 +1,75 @@
 package net.minecraft.util;
 
-import com.google.common.collect.Maps;
-import com.mojang.authlib.GameProfile;
-import com.mojang.util.UUIDTypeAdapter;
 import java.util.Map;
 import java.util.UUID;
 
-public class Session
-{
-    private final String username;
-    private final String playerID;
-    private final String token;
-    private final Session.Type sessionType;
-    private static final String __OBFID = "CL_00000659";
+import com.google.common.collect.Maps;
+import com.mojang.authlib.GameProfile;
+import com.mojang.util.UUIDTypeAdapter;
 
-    public Session(String p_i1098_1_, String p_i1098_2_, String p_i1098_3_, String p_i1098_4_)
-    {
-        this.username = p_i1098_1_;
-        this.playerID = p_i1098_2_;
-        this.token = p_i1098_3_;
-        this.sessionType = Session.Type.setSessionType(p_i1098_4_);
-    }
+public class Session {
+	private final String username;
+	private final String playerID;
+	private final String token;
+	private final Session.Type sessionType;
 
-    public String getSessionID()
-    {
-        return "token:" + this.token + ":" + this.playerID;
-    }
+	public Session(String usernameIn, String playerIDIn, String tokenIn, String sessionTypeIn) {
+		this.username = usernameIn;
+		this.playerID = playerIDIn;
+		this.token = tokenIn;
+		this.sessionType = Session.Type.setSessionType(sessionTypeIn);
+	}
 
-    public String getPlayerID()
-    {
-        return this.playerID;
-    }
+	public String getSessionID() {
+		return "token:" + this.token + ":" + this.playerID;
+	}
 
-    public String getUsername()
-    {
-        return this.username;
-    }
+	public String getPlayerID() {
+		return this.playerID;
+	}
 
-    public String getToken()
-    {
-        return this.token;
-    }
+	public String getUsername() {
+		return this.username;
+	}
 
-    public GameProfile getProfile()
-    {
-        try
-        {
-            UUID var1 = UUIDTypeAdapter.fromString(this.getPlayerID());
-            return new GameProfile(var1, this.getUsername());
-        }
-        catch (IllegalArgumentException var2)
-        {
-            return new GameProfile((UUID)null, this.getUsername());
-        }
-    }
+	public String getToken() {
+		return this.token;
+	}
 
-    /**
-     * Returns either 'legacy' or 'mojang' whether the account is migrated or not
-     */
-    public Session.Type getSessionType()
-    {
-        return this.sessionType;
-    }
+	public GameProfile getProfile() {
+		try {
+			UUID uuid = UUIDTypeAdapter.fromString(this.getPlayerID());
+			return new GameProfile(uuid, this.getUsername());
+		} catch (IllegalArgumentException var2) {
+			return new GameProfile((UUID) null, this.getUsername());
+		}
+	}
 
-    public static enum Type
-    {
-        LEGACY("LEGACY", 0, "legacy"),
-        MOJANG("MOJANG", 1, "mojang");
-        private static final Map field_152425_c = Maps.newHashMap();
-        private final String sessionType;
+	/**
+	 * Returns either 'legacy' or 'mojang' whether the account is migrated or not
+	 */
+	public Session.Type getSessionType() {
+		return this.sessionType;
+	}
 
-        private static final Session.Type[] $VALUES = new Session.Type[]{LEGACY, MOJANG};
-        private static final String __OBFID = "CL_00001851";
+	public static enum Type {
+		LEGACY("legacy"), MOJANG("mojang");
 
-        private Type(String p_i1096_1_, int p_i1096_2_, String p_i1096_3_)
-        {
-            this.sessionType = p_i1096_3_;
-        }
+		private static final Map<String, Session.Type> SESSION_TYPES = Maps.<String, Session.Type>newHashMap();
+		private final String sessionType;
 
-        public static Session.Type setSessionType(String p_152421_0_)
-        {
-            return (Session.Type)field_152425_c.get(p_152421_0_.toLowerCase());
-        }
+		private Type(String sessionTypeIn) {
+			this.sessionType = sessionTypeIn;
+		}
 
-        static {
-            Session.Type[] var0 = values();
-            int var1 = var0.length;
+		public static Session.Type setSessionType(String sessionTypeIn) {
+			return (Session.Type) SESSION_TYPES.get(sessionTypeIn.toLowerCase());
+		}
 
-            for (int var2 = 0; var2 < var1; ++var2)
-            {
-                Session.Type var3 = var0[var2];
-                field_152425_c.put(var3.sessionType, var3);
-            }
-        }
-    }
+		static {
+			for (Session.Type session$type : values()) {
+				SESSION_TYPES.put(session$type.sessionType, session$type);
+			}
+		}
+	}
 }

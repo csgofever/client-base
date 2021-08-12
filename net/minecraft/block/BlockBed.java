@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
-import java.util.Iterator;
 import java.util.Random;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -21,325 +21,256 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
-public class BlockBed extends BlockDirectional
-{
-    public static final PropertyEnum PART_PROP = PropertyEnum.create("part", BlockBed.EnumPartType.class);
-    public static final PropertyBool OCCUPIED_PROP = PropertyBool.create("occupied");
-    private static final String __OBFID = "CL_00000198";
+public class BlockBed extends BlockDirectional {
+	public static final PropertyEnum<BlockBed.EnumPartType> PART = PropertyEnum.<BlockBed.EnumPartType>create("part", BlockBed.EnumPartType.class);
+	public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
 
-    public BlockBed()
-    {
-        super(Material.cloth);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(PART_PROP, BlockBed.EnumPartType.FOOT).withProperty(OCCUPIED_PROP, Boolean.valueOf(false)));
-        this.setBedBounds();
-    }
+	public BlockBed() {
+		super(Material.cloth);
+		this.setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockBed.EnumPartType.FOOT).withProperty(OCCUPIED, Boolean.valueOf(false)));
+		this.setBedBounds();
+	}
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
-        if (worldIn.isRemote)
-        {
-            return true;
-        }
-        else
-        {
-            if (state.getValue(PART_PROP) != BlockBed.EnumPartType.HEAD)
-            {
-                pos = pos.offset((EnumFacing)state.getValue(AGE));
-                state = worldIn.getBlockState(pos);
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
+		if (worldIn.isRemote) {
+			return true;
+		} else {
+			if (state.getValue(PART) != BlockBed.EnumPartType.HEAD) {
+				pos = pos.offset((EnumFacing) state.getValue(FACING));
+				state = worldIn.getBlockState(pos);
 
-                if (state.getBlock() != this)
-                {
-                    return true;
-                }
-            }
+				if (state.getBlock() != this) {
+					return true;
+				}
+			}
 
-            if (worldIn.provider.canRespawnHere() && worldIn.getBiomeGenForCoords(pos) != BiomeGenBase.hell)
-            {
-                if (((Boolean)state.getValue(OCCUPIED_PROP)).booleanValue())
-                {
-                    EntityPlayer var10 = this.func_176470_e(worldIn, pos);
+			if (worldIn.provider.canRespawnHere() && worldIn.getBiomeGenForCoords(pos) != BiomeGenBase.hell) {
+				if (((Boolean) state.getValue(OCCUPIED)).booleanValue()) {
+					EntityPlayer entityplayer = this.getPlayerInBed(worldIn, pos);
 
-                    if (var10 != null)
-                    {
-                        playerIn.addChatComponentMessage(new ChatComponentTranslation("tile.bed.occupied", new Object[0]));
-                        return true;
-                    }
+					if (entityplayer != null) {
+						playerIn.addChatComponentMessage(new ChatComponentTranslation("tile.bed.occupied", new Object[0]));
+						return true;
+					}
 
-                    state = state.withProperty(OCCUPIED_PROP, Boolean.valueOf(false));
-                    worldIn.setBlockState(pos, state, 4);
-                }
+					state = state.withProperty(OCCUPIED, Boolean.valueOf(false));
+					worldIn.setBlockState(pos, state, 4);
+				}
 
-                EntityPlayer.EnumStatus var11 = playerIn.func_180469_a(pos);
+				EntityPlayer.EnumStatus entityplayer$enumstatus = playerIn.trySleep(pos);
 
-                if (var11 == EntityPlayer.EnumStatus.OK)
-                {
-                    state = state.withProperty(OCCUPIED_PROP, Boolean.valueOf(true));
-                    worldIn.setBlockState(pos, state, 4);
-                    return true;
-                }
-                else
-                {
-                    if (var11 == EntityPlayer.EnumStatus.NOT_POSSIBLE_NOW)
-                    {
-                        playerIn.addChatComponentMessage(new ChatComponentTranslation("tile.bed.noSleep", new Object[0]));
-                    }
-                    else if (var11 == EntityPlayer.EnumStatus.NOT_SAFE)
-                    {
-                        playerIn.addChatComponentMessage(new ChatComponentTranslation("tile.bed.notSafe", new Object[0]));
-                    }
+				if (entityplayer$enumstatus == EntityPlayer.EnumStatus.OK) {
+					state = state.withProperty(OCCUPIED, Boolean.valueOf(true));
+					worldIn.setBlockState(pos, state, 4);
+					return true;
+				} else {
+					if (entityplayer$enumstatus == EntityPlayer.EnumStatus.NOT_POSSIBLE_NOW) {
+						playerIn.addChatComponentMessage(new ChatComponentTranslation("tile.bed.noSleep", new Object[0]));
+					} else if (entityplayer$enumstatus == EntityPlayer.EnumStatus.NOT_SAFE) {
+						playerIn.addChatComponentMessage(new ChatComponentTranslation("tile.bed.notSafe", new Object[0]));
+					}
 
-                    return true;
-                }
-            }
-            else
-            {
-                worldIn.setBlockToAir(pos);
-                BlockPos var9 = pos.offset(((EnumFacing)state.getValue(AGE)).getOpposite());
+					return true;
+				}
+			} else {
+				worldIn.setBlockToAir(pos);
+				BlockPos blockpos = pos.offset(((EnumFacing) state.getValue(FACING)).getOpposite());
 
-                if (worldIn.getBlockState(var9).getBlock() == this)
-                {
-                    worldIn.setBlockToAir(var9);
-                }
+				if (worldIn.getBlockState(blockpos).getBlock() == this) {
+					worldIn.setBlockToAir(blockpos);
+				}
 
-                worldIn.newExplosion((Entity)null, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, 5.0F, true, true);
-                return true;
-            }
-        }
-    }
+				worldIn.newExplosion((Entity) null, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, 5.0F, true, true);
+				return true;
+			}
+		}
+	}
 
-    private EntityPlayer func_176470_e(World worldIn, BlockPos p_176470_2_)
-    {
-        Iterator var3 = worldIn.playerEntities.iterator();
-        EntityPlayer var4;
+	private EntityPlayer getPlayerInBed(World worldIn, BlockPos pos) {
+		for (EntityPlayer entityplayer : worldIn.playerEntities) {
+			if (entityplayer.isPlayerSleeping() && entityplayer.playerLocation.equals(pos)) {
+				return entityplayer;
+			}
+		}
 
-        do
-        {
-            if (!var3.hasNext())
-            {
-                return null;
-            }
+		return null;
+	}
 
-            var4 = (EntityPlayer)var3.next();
-        }
-        while (!var4.isPlayerSleeping() || !var4.playerLocation.equals(p_176470_2_));
+	public boolean isFullCube() {
+		return false;
+	}
 
-        return var4;
-    }
+	/**
+	 * Used to determine ambient occlusion and culling when rebuilding chunks for
+	 * render
+	 */
+	public boolean isOpaqueCube() {
+		return false;
+	}
 
-    public boolean isFullCube()
-    {
-        return false;
-    }
+	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
+		this.setBedBounds();
+	}
 
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
+	/**
+	 * Called when a neighboring block changes.
+	 */
+	public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
+		EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
 
-    public void setBlockBoundsBasedOnState(IBlockAccess access, BlockPos pos)
-    {
-        this.setBedBounds();
-    }
+		if (state.getValue(PART) == BlockBed.EnumPartType.HEAD) {
+			if (worldIn.getBlockState(pos.offset(enumfacing.getOpposite())).getBlock() != this) {
+				worldIn.setBlockToAir(pos);
+			}
+		} else if (worldIn.getBlockState(pos.offset(enumfacing)).getBlock() != this) {
+			worldIn.setBlockToAir(pos);
 
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
-    {
-        EnumFacing var5 = (EnumFacing)state.getValue(AGE);
+			if (!worldIn.isRemote) {
+				this.dropBlockAsItem(worldIn, pos, state, 0);
+			}
+		}
+	}
 
-        if (state.getValue(PART_PROP) == BlockBed.EnumPartType.HEAD)
-        {
-            if (worldIn.getBlockState(pos.offset(var5.getOpposite())).getBlock() != this)
-            {
-                worldIn.setBlockToAir(pos);
-            }
-        }
-        else if (worldIn.getBlockState(pos.offset(var5)).getBlock() != this)
-        {
-            worldIn.setBlockToAir(pos);
+	/**
+	 * Get the Item that this Block should drop when harvested.
+	 */
+	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+		return state.getValue(PART) == BlockBed.EnumPartType.HEAD ? null : Items.bed;
+	}
 
-            if (!worldIn.isRemote)
-            {
-                this.dropBlockAsItem(worldIn, pos, state, 0);
-            }
-        }
-    }
+	private void setBedBounds() {
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5625F, 1.0F);
+	}
 
-    /**
-     * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
-     */
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
-        return state.getValue(PART_PROP) == BlockBed.EnumPartType.HEAD ? null : Items.bed;
-    }
+	/**
+	 * Returns a safe BlockPos to disembark the bed
+	 */
+	public static BlockPos getSafeExitLocation(World worldIn, BlockPos pos, int tries) {
+		EnumFacing enumfacing = (EnumFacing) worldIn.getBlockState(pos).getValue(FACING);
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
 
-    private void setBedBounds()
-    {
-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5625F, 1.0F);
-    }
+		for (int l = 0; l <= 1; ++l) {
+			int i1 = i - enumfacing.getFrontOffsetX() * l - 1;
+			int j1 = k - enumfacing.getFrontOffsetZ() * l - 1;
+			int k1 = i1 + 2;
+			int l1 = j1 + 2;
 
-    /**
-     * Returns a safe BlockPos to disembark the bed
-     */
-    public static BlockPos getSafeExitLocation(World worldIn, BlockPos p_176468_1_, int p_176468_2_)
-    {
-        EnumFacing var3 = (EnumFacing)worldIn.getBlockState(p_176468_1_).getValue(AGE);
-        int var4 = p_176468_1_.getX();
-        int var5 = p_176468_1_.getY();
-        int var6 = p_176468_1_.getZ();
+			for (int i2 = i1; i2 <= k1; ++i2) {
+				for (int j2 = j1; j2 <= l1; ++j2) {
+					BlockPos blockpos = new BlockPos(i2, j, j2);
 
-        for (int var7 = 0; var7 <= 1; ++var7)
-        {
-            int var8 = var4 - var3.getFrontOffsetX() * var7 - 1;
-            int var9 = var6 - var3.getFrontOffsetZ() * var7 - 1;
-            int var10 = var8 + 2;
-            int var11 = var9 + 2;
+					if (hasRoomForPlayer(worldIn, blockpos)) {
+						if (tries <= 0) {
+							return blockpos;
+						}
 
-            for (int var12 = var8; var12 <= var10; ++var12)
-            {
-                for (int var13 = var9; var13 <= var11; ++var13)
-                {
-                    BlockPos var14 = new BlockPos(var12, var5, var13);
+						--tries;
+					}
+				}
+			}
+		}
 
-                    if (func_176469_d(worldIn, var14))
-                    {
-                        if (p_176468_2_ <= 0)
-                        {
-                            return var14;
-                        }
+		return null;
+	}
 
-                        --p_176468_2_;
-                    }
-                }
-            }
-        }
+	protected static boolean hasRoomForPlayer(World worldIn, BlockPos pos) {
+		return World.doesBlockHaveSolidTopSurface(worldIn, pos.down()) && !worldIn.getBlockState(pos).getBlock().getMaterial().isSolid() && !worldIn.getBlockState(pos.up()).getBlock().getMaterial().isSolid();
+	}
 
-        return null;
-    }
+	/**
+	 * Spawns this Block's drops into the World as EntityItems.
+	 */
+	public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+		if (state.getValue(PART) == BlockBed.EnumPartType.FOOT) {
+			super.dropBlockAsItemWithChance(worldIn, pos, state, chance, 0);
+		}
+	}
 
-    protected static boolean func_176469_d(World worldIn, BlockPos p_176469_1_)
-    {
-        return World.doesBlockHaveSolidTopSurface(worldIn, p_176469_1_.offsetDown()) && !worldIn.getBlockState(p_176469_1_).getBlock().getMaterial().isSolid() && !worldIn.getBlockState(p_176469_1_.offsetUp()).getBlock().getMaterial().isSolid();
-    }
+	public int getMobilityFlag() {
+		return 1;
+	}
 
-    /**
-     * Spawns this Block's drops into the World as EntityItems.
-     *  
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
-     */
-    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
-    {
-        if (state.getValue(PART_PROP) == BlockBed.EnumPartType.FOOT)
-        {
-            super.dropBlockAsItemWithChance(worldIn, pos, state, chance, 0);
-        }
-    }
+	public EnumWorldBlockLayer getBlockLayer() {
+		return EnumWorldBlockLayer.CUTOUT;
+	}
 
-    public int getMobilityFlag()
-    {
-        return 1;
-    }
+	public Item getItem(World worldIn, BlockPos pos) {
+		return Items.bed;
+	}
 
-    public EnumWorldBlockLayer getBlockLayer()
-    {
-        return EnumWorldBlockLayer.CUTOUT;
-    }
+	public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+		if (player.capabilities.isCreativeMode && state.getValue(PART) == BlockBed.EnumPartType.HEAD) {
+			BlockPos blockpos = pos.offset(((EnumFacing) state.getValue(FACING)).getOpposite());
 
-    public Item getItem(World worldIn, BlockPos pos)
-    {
-        return Items.bed;
-    }
+			if (worldIn.getBlockState(blockpos).getBlock() == this) {
+				worldIn.setBlockToAir(blockpos);
+			}
+		}
+	}
 
-    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)
-    {
-        if (playerIn.capabilities.isCreativeMode && state.getValue(PART_PROP) == BlockBed.EnumPartType.HEAD)
-        {
-            BlockPos var5 = pos.offset(((EnumFacing)state.getValue(AGE)).getOpposite());
+	/**
+	 * Convert the given metadata into a BlockState for this Block
+	 */
+	public IBlockState getStateFromMeta(int meta) {
+		EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
+		return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART, BlockBed.EnumPartType.HEAD).withProperty(FACING, enumfacing).withProperty(OCCUPIED, Boolean.valueOf((meta & 4) > 0)) : this.getDefaultState().withProperty(PART, BlockBed.EnumPartType.FOOT).withProperty(FACING, enumfacing);
+	}
 
-            if (worldIn.getBlockState(var5).getBlock() == this)
-            {
-                worldIn.setBlockToAir(var5);
-            }
-        }
-    }
+	/**
+	 * Get the actual Block state of this Block at the given position. This applies
+	 * properties not visible in the metadata, such as fence connections.
+	 */
+	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		if (state.getValue(PART) == BlockBed.EnumPartType.FOOT) {
+			IBlockState iblockstate = worldIn.getBlockState(pos.offset((EnumFacing) state.getValue(FACING)));
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     */
-    public IBlockState getStateFromMeta(int meta)
-    {
-        EnumFacing var2 = EnumFacing.getHorizontal(meta);
-        return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART_PROP, BlockBed.EnumPartType.HEAD).withProperty(AGE, var2).withProperty(OCCUPIED_PROP, Boolean.valueOf((meta & 4) > 0)) : this.getDefaultState().withProperty(PART_PROP, BlockBed.EnumPartType.FOOT).withProperty(AGE, var2);
-    }
+			if (iblockstate.getBlock() == this) {
+				state = state.withProperty(OCCUPIED, iblockstate.getValue(OCCUPIED));
+			}
+		}
 
-    /**
-     * Get the actual Block state of this Block at the given position. This applies properties not visible in the
-     * metadata, such as fence connections.
-     */
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    {
-        if (state.getValue(PART_PROP) == BlockBed.EnumPartType.FOOT)
-        {
-            IBlockState var4 = worldIn.getBlockState(pos.offset((EnumFacing)state.getValue(AGE)));
+		return state;
+	}
 
-            if (var4.getBlock() == this)
-            {
-                state = state.withProperty(OCCUPIED_PROP, var4.getValue(OCCUPIED_PROP));
-            }
-        }
+	/**
+	 * Convert the BlockState into the correct metadata value
+	 */
+	public int getMetaFromState(IBlockState state) {
+		int i = 0;
+		i = i | ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
 
-        return state;
-    }
+		if (state.getValue(PART) == BlockBed.EnumPartType.HEAD) {
+			i |= 8;
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
-    public int getMetaFromState(IBlockState state)
-    {
-        byte var2 = 0;
-        int var3 = var2 | ((EnumFacing)state.getValue(AGE)).getHorizontalIndex();
+			if (((Boolean) state.getValue(OCCUPIED)).booleanValue()) {
+				i |= 4;
+			}
+		}
 
-        if (state.getValue(PART_PROP) == BlockBed.EnumPartType.HEAD)
-        {
-            var3 |= 8;
+		return i;
+	}
 
-            if (((Boolean)state.getValue(OCCUPIED_PROP)).booleanValue())
-            {
-                var3 |= 4;
-            }
-        }
+	protected BlockState createBlockState() {
+		return new BlockState(this, new IProperty[] { FACING, PART, OCCUPIED });
+	}
 
-        return var3;
-    }
+	public static enum EnumPartType implements IStringSerializable {
+		HEAD("head"), FOOT("foot");
 
-    protected BlockState createBlockState()
-    {
-        return new BlockState(this, new IProperty[] {AGE, PART_PROP, OCCUPIED_PROP});
-    }
+		private final String name;
 
-    public static enum EnumPartType implements IStringSerializable
-    {
-        HEAD("HEAD", 0, "head"),
-        FOOT("FOOT", 1, "foot");
-        private final String field_177036_c;
+		private EnumPartType(String name) {
+			this.name = name;
+		}
 
-        private static final BlockBed.EnumPartType[] $VALUES = new BlockBed.EnumPartType[]{HEAD, FOOT};
-        private static final String __OBFID = "CL_00002134";
+		public String toString() {
+			return this.name;
+		}
 
-        private EnumPartType(String p_i45735_1_, int p_i45735_2_, String p_i45735_3_)
-        {
-            this.field_177036_c = p_i45735_3_;
-        }
-
-        public String toString()
-        {
-            return this.field_177036_c;
-        }
-
-        public String getName()
-        {
-            return this.field_177036_c;
-        }
-    }
+		public String getName() {
+			return this.name;
+		}
+	}
 }

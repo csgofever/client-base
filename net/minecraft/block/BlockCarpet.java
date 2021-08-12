@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.List;
+
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -15,122 +17,117 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockCarpet extends Block
-{
-    public static final PropertyEnum field_176330_a = PropertyEnum.create("color", EnumDyeColor.class);
-    private static final String __OBFID = "CL_00000338";
+public class BlockCarpet extends Block {
+	public static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.<EnumDyeColor>create("color", EnumDyeColor.class);
 
-    protected BlockCarpet()
-    {
-        super(Material.carpet);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(field_176330_a, EnumDyeColor.WHITE));
-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.0625F, 1.0F);
-        this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
-        this.setBlockBoundsFromMeta(0);
-    }
+	protected BlockCarpet() {
+		super(Material.carpet);
+		this.setDefaultState(this.blockState.getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.0625F, 1.0F);
+		this.setTickRandomly(true);
+		this.setCreativeTab(CreativeTabs.tabDecorations);
+		this.setBlockBoundsFromMeta(0);
+	}
 
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
+	/**
+	 * Get the MapColor for this Block and the given BlockState
+	 */
+	public MapColor getMapColor(IBlockState state) {
+		return ((EnumDyeColor) state.getValue(COLOR)).getMapColor();
+	}
 
-    public boolean isFullCube()
-    {
-        return false;
-    }
+	/**
+	 * Used to determine ambient occlusion and culling when rebuilding chunks for
+	 * render
+	 */
+	public boolean isOpaqueCube() {
+		return false;
+	}
 
-    /**
-     * Sets the block's bounds for rendering it as an item
-     */
-    public void setBlockBoundsForItemRender()
-    {
-        this.setBlockBoundsFromMeta(0);
-    }
+	public boolean isFullCube() {
+		return false;
+	}
 
-    public void setBlockBoundsBasedOnState(IBlockAccess access, BlockPos pos)
-    {
-        this.setBlockBoundsFromMeta(0);
-    }
+	/**
+	 * Sets the block's bounds for rendering it as an item
+	 */
+	public void setBlockBoundsForItemRender() {
+		this.setBlockBoundsFromMeta(0);
+	}
 
-    protected void setBlockBoundsFromMeta(int meta)
-    {
-        byte var2 = 0;
-        float var3 = (float)(1 * (1 + var2)) / 16.0F;
-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, var3, 1.0F);
-    }
+	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
+		this.setBlockBoundsFromMeta(0);
+	}
 
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
-        return super.canPlaceBlockAt(worldIn, pos) && this.canBlockStay(worldIn, pos);
-    }
+	protected void setBlockBoundsFromMeta(int meta) {
+		int i = 0;
+		float f = (float) (1 * (1 + i)) / 16.0F;
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, f, 1.0F);
+	}
 
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
-    {
-        this.checkAndDropBlock(worldIn, pos, state);
-    }
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+		return super.canPlaceBlockAt(worldIn, pos) && this.canBlockStay(worldIn, pos);
+	}
 
-    private boolean checkAndDropBlock(World worldIn, BlockPos p_176328_2_, IBlockState p_176328_3_)
-    {
-        if (!this.canBlockStay(worldIn, p_176328_2_))
-        {
-            this.dropBlockAsItem(worldIn, p_176328_2_, p_176328_3_, 0);
-            worldIn.setBlockToAir(p_176328_2_);
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
+	/**
+	 * Called when a neighboring block changes.
+	 */
+	public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
+		this.checkForDrop(worldIn, pos, state);
+	}
 
-    private boolean canBlockStay(World worldIn, BlockPos p_176329_2_)
-    {
-        return !worldIn.isAirBlock(p_176329_2_.offsetDown());
-    }
+	private boolean checkForDrop(World worldIn, BlockPos pos, IBlockState state) {
+		if (!this.canBlockStay(worldIn, pos)) {
+			this.dropBlockAsItem(worldIn, pos, state, 0);
+			worldIn.setBlockToAir(pos);
+			return false;
+		} else {
+			return true;
+		}
+	}
 
-    public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
-    {
-        return side == EnumFacing.UP ? true : super.shouldSideBeRendered(worldIn, pos, side);
-    }
+	private boolean canBlockStay(World worldIn, BlockPos pos) {
+		return !worldIn.isAirBlock(pos.down());
+	}
 
-    /**
-     * Get the damage value that this Block should drop
-     */
-    public int damageDropped(IBlockState state)
-    {
-        return ((EnumDyeColor)state.getValue(field_176330_a)).func_176765_a();
-    }
+	public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
+		return side == EnumFacing.UP ? true : super.shouldSideBeRendered(worldIn, pos, side);
+	}
 
-    /**
-     * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
-     */
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list)
-    {
-        for (int var4 = 0; var4 < 16; ++var4)
-        {
-            list.add(new ItemStack(itemIn, 1, var4));
-        }
-    }
+	/**
+	 * Gets the metadata of the item this Block can drop. This method is called when
+	 * the block gets destroyed. It returns the metadata of the dropped item based
+	 * on the old metadata of the block.
+	 */
+	public int damageDropped(IBlockState state) {
+		return ((EnumDyeColor) state.getValue(COLOR)).getMetadata();
+	}
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     */
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.getDefaultState().withProperty(field_176330_a, EnumDyeColor.func_176764_b(meta));
-    }
+	/**
+	 * returns a list of blocks with the same ID, but different meta (eg: wood
+	 * returns 4 blocks)
+	 */
+	public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
+		for (int i = 0; i < 16; ++i) {
+			list.add(new ItemStack(itemIn, 1, i));
+		}
+	}
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumDyeColor)state.getValue(field_176330_a)).func_176765_a();
-    }
+	/**
+	 * Convert the given metadata into a BlockState for this Block
+	 */
+	public IBlockState getStateFromMeta(int meta) {
+		return this.getDefaultState().withProperty(COLOR, EnumDyeColor.byMetadata(meta));
+	}
 
-    protected BlockState createBlockState()
-    {
-        return new BlockState(this, new IProperty[] {field_176330_a});
-    }
+	/**
+	 * Convert the BlockState into the correct metadata value
+	 */
+	public int getMetaFromState(IBlockState state) {
+		return ((EnumDyeColor) state.getValue(COLOR)).getMetadata();
+	}
+
+	protected BlockState createBlockState() {
+		return new BlockState(this, new IProperty[] { COLOR });
+	}
 }

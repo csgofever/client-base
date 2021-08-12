@@ -1,73 +1,57 @@
 package net.minecraft.util;
 
-import java.util.Iterator;
+public class ChatComponentSelector extends ChatComponentStyle {
+	/**
+	 * The selector used to find the matching entities of this text component
+	 */
+	private final String selector;
 
-public class ChatComponentSelector extends ChatComponentStyle
-{
-    private final String field_179993_b;
-    private static final String __OBFID = "CL_00002308";
+	public ChatComponentSelector(String selectorIn) {
+		this.selector = selectorIn;
+	}
 
-    public ChatComponentSelector(String p_i45996_1_)
-    {
-        this.field_179993_b = p_i45996_1_;
-    }
+	/**
+	 * Gets the selector of this component, in plain text.
+	 */
+	public String getSelector() {
+		return this.selector;
+	}
 
-    public String func_179992_g()
-    {
-        return this.field_179993_b;
-    }
+	/**
+	 * Gets the text of this component, without any special formatting codes added,
+	 * for chat. TODO: why is this two different methods?
+	 */
+	public String getUnformattedTextForChat() {
+		return this.selector;
+	}
 
-    /**
-     * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
-     * different methods?
-     */
-    public String getUnformattedTextForChat()
-    {
-        return this.field_179993_b;
-    }
+	/**
+	 * Creates a copy of this component. Almost a deep copy, except the style is
+	 * shallow-copied.
+	 */
+	public ChatComponentSelector createCopy() {
+		ChatComponentSelector chatcomponentselector = new ChatComponentSelector(this.selector);
+		chatcomponentselector.setChatStyle(this.getChatStyle().createShallowCopy());
 
-    public ChatComponentSelector func_179991_h()
-    {
-        ChatComponentSelector var1 = new ChatComponentSelector(this.field_179993_b);
-        var1.setChatStyle(this.getChatStyle().createShallowCopy());
-        Iterator var2 = this.getSiblings().iterator();
+		for (IChatComponent ichatcomponent : this.getSiblings()) {
+			chatcomponentselector.appendSibling(ichatcomponent.createCopy());
+		}
 
-        while (var2.hasNext())
-        {
-            IChatComponent var3 = (IChatComponent)var2.next();
-            var1.appendSibling(var3.createCopy());
-        }
+		return chatcomponentselector;
+	}
 
-        return var1;
-    }
+	public boolean equals(Object p_equals_1_) {
+		if (this == p_equals_1_) {
+			return true;
+		} else if (!(p_equals_1_ instanceof ChatComponentSelector)) {
+			return false;
+		} else {
+			ChatComponentSelector chatcomponentselector = (ChatComponentSelector) p_equals_1_;
+			return this.selector.equals(chatcomponentselector.selector) && super.equals(p_equals_1_);
+		}
+	}
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (this == p_equals_1_)
-        {
-            return true;
-        }
-        else if (!(p_equals_1_ instanceof ChatComponentSelector))
-        {
-            return false;
-        }
-        else
-        {
-            ChatComponentSelector var2 = (ChatComponentSelector)p_equals_1_;
-            return this.field_179993_b.equals(var2.field_179993_b) && super.equals(p_equals_1_);
-        }
-    }
-
-    public String toString()
-    {
-        return "SelectorComponent{pattern=\'" + this.field_179993_b + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
-    }
-
-    /**
-     * Creates a copy of this component.  Almost a deep copy, except the style is shallow-copied.
-     */
-    public IChatComponent createCopy()
-    {
-        return this.func_179991_h();
-    }
+	public String toString() {
+		return "SelectorComponent{pattern=\'" + this.selector + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
+	}
 }

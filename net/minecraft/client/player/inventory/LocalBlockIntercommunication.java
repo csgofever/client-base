@@ -6,46 +6,42 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.IInteractionObject;
 
-public class LocalBlockIntercommunication implements IInteractionObject
-{
-    private String field_175126_a;
-    private IChatComponent field_175125_b;
-    private static final String __OBFID = "CL_00002571";
+public class LocalBlockIntercommunication implements IInteractionObject {
+	private String guiID;
+	private IChatComponent displayName;
 
-    public LocalBlockIntercommunication(String p_i46277_1_, IChatComponent p_i46277_2_)
-    {
-        this.field_175126_a = p_i46277_1_;
-        this.field_175125_b = p_i46277_2_;
-    }
+	public LocalBlockIntercommunication(String guiIdIn, IChatComponent displayNameIn) {
+		this.guiID = guiIdIn;
+		this.displayName = displayNameIn;
+	}
 
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
-    {
-        throw new UnsupportedOperationException();
-    }
+	public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * Gets the name of this command sender (usually username, but possibly "Rcon")
-     */
-    public String getName()
-    {
-        return this.field_175125_b.getUnformattedText();
-    }
+	/**
+	 * Gets the name of this command sender (usually username, but possibly "Rcon")
+	 */
+	public String getName() {
+		return this.displayName.getUnformattedText();
+	}
 
-    /**
-     * Returns true if this thing is named
-     */
-    public boolean hasCustomName()
-    {
-        return true;
-    }
+	/**
+	 * Returns true if this thing is named
+	 */
+	public boolean hasCustomName() {
+		return true;
+	}
 
-    public String getGuiID()
-    {
-        return this.field_175126_a;
-    }
+	public String getGuiID() {
+		return this.guiID;
+	}
 
-    public IChatComponent getDisplayName()
-    {
-        return this.field_175125_b;
-    }
+	/**
+	 * Get the formatted ChatComponent that will be used for the sender's username
+	 * in chat
+	 */
+	public IChatComponent getDisplayName() {
+		return this.displayName;
+	}
 }

@@ -1,72 +1,57 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.scoreboard.ScoreObjective;
 
-public class S3DPacketDisplayScoreboard implements Packet
-{
-    private int field_149374_a;
-    private String field_149373_b;
-    private static final String __OBFID = "CL_00001325";
+public class S3DPacketDisplayScoreboard implements Packet<INetHandlerPlayClient> {
+	private int position;
+	private String scoreName;
 
-    public S3DPacketDisplayScoreboard() {}
+	public S3DPacketDisplayScoreboard() {
+	}
 
-    public S3DPacketDisplayScoreboard(int p_i45216_1_, ScoreObjective p_i45216_2_)
-    {
-        this.field_149374_a = p_i45216_1_;
+	public S3DPacketDisplayScoreboard(int positionIn, ScoreObjective scoreIn) {
+		this.position = positionIn;
 
-        if (p_i45216_2_ == null)
-        {
-            this.field_149373_b = "";
-        }
-        else
-        {
-            this.field_149373_b = p_i45216_2_.getName();
-        }
-    }
+		if (scoreIn == null) {
+			this.scoreName = "";
+		} else {
+			this.scoreName = scoreIn.getName();
+		}
+	}
 
-    /**
-     * Reads the raw packet data from the data stream.
-     */
-    public void readPacketData(PacketBuffer data) throws IOException
-    {
-        this.field_149374_a = data.readByte();
-        this.field_149373_b = data.readStringFromBuffer(16);
-    }
+	/**
+	 * Reads the raw packet data from the data stream.
+	 */
+	public void readPacketData(PacketBuffer buf) throws IOException {
+		this.position = buf.readByte();
+		this.scoreName = buf.readStringFromBuffer(16);
+	}
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer data) throws IOException
-    {
-        data.writeByte(this.field_149374_a);
-        data.writeString(this.field_149373_b);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) throws IOException {
+		buf.writeByte(this.position);
+		buf.writeString(this.scoreName);
+	}
 
-    public void func_180747_a(INetHandlerPlayClient p_180747_1_)
-    {
-        p_180747_1_.handleDisplayScoreboard(this);
-    }
+	/**
+	 * Passes this Packet on to the NetHandler for processing.
+	 */
+	public void processPacket(INetHandlerPlayClient handler) {
+		handler.handleDisplayScoreboard(this);
+	}
 
-    public int func_149371_c()
-    {
-        return this.field_149374_a;
-    }
+	public int func_149371_c() {
+		return this.position;
+	}
 
-    public String func_149370_d()
-    {
-        return this.field_149373_b;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.func_180747_a((INetHandlerPlayClient)handler);
-    }
+	public String func_149370_d() {
+		return this.scoreName;
+	}
 }

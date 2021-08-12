@@ -1,27 +1,36 @@
 package net.minecraft.command;
 
 import java.util.List;
+
 import net.minecraft.util.BlockPos;
 
-public interface ICommand extends Comparable
-{
-    String getCommandName();
+public interface ICommand extends Comparable<ICommand> {
+	/**
+	 * Gets the name of the command
+	 */
+	String getCommandName();
 
-    String getCommandUsage(ICommandSender var1);
+	/**
+	 * Gets the usage string for the command.
+	 */
+	String getCommandUsage(ICommandSender sender);
 
-    List getCommandAliases();
+	List<String> getCommandAliases();
 
-    void processCommand(ICommandSender var1, String[] var2) throws CommandException;
+	/**
+	 * Callback when the command is invoked
+	 */
+	void processCommand(ICommandSender sender, String[] args) throws CommandException;
 
-    /**
-     * Returns true if the given command sender is allowed to use this command.
-     */
-    boolean canCommandSenderUseCommand(ICommandSender var1);
+	/**
+	 * Returns true if the given command sender is allowed to use this command.
+	 */
+	boolean canCommandSenderUseCommand(ICommandSender sender);
 
-    List addTabCompletionOptions(ICommandSender var1, String[] var2, BlockPos var3);
+	List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos);
 
-    /**
-     * Return whether the specified command parameter index is a username parameter.
-     */
-    boolean isUsernameIndex(String[] var1, int var2);
+	/**
+	 * Return whether the specified command parameter index is a username parameter.
+	 */
+	boolean isUsernameIndex(String[] args, int index);
 }

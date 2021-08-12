@@ -1,131 +1,95 @@
 package net.minecraft.event;
 
-import com.google.common.collect.Maps;
 import java.util.Map;
 
-public class ClickEvent
-{
-    private final ClickEvent.Action action;
-    private final String value;
-    private static final String __OBFID = "CL_00001260";
+import com.google.common.collect.Maps;
 
-    public ClickEvent(ClickEvent.Action p_i45156_1_, String p_i45156_2_)
-    {
-        this.action = p_i45156_1_;
-        this.value = p_i45156_2_;
-    }
+public class ClickEvent {
+	private final ClickEvent.Action action;
+	private final String value;
 
-    /**
-     * Gets the action to perform when this event is raised.
-     */
-    public ClickEvent.Action getAction()
-    {
-        return this.action;
-    }
+	public ClickEvent(ClickEvent.Action theAction, String theValue) {
+		this.action = theAction;
+		this.value = theValue;
+	}
 
-    /**
-     * Gets the value to perform the action on when this event is raised.  For example, if the action is "open URL",
-     * this would be the URL to open.
-     */
-    public String getValue()
-    {
-        return this.value;
-    }
+	/**
+	 * Gets the action to perform when this event is raised.
+	 */
+	public ClickEvent.Action getAction() {
+		return this.action;
+	}
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (this == p_equals_1_)
-        {
-            return true;
-        }
-        else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass())
-        {
-            ClickEvent var2 = (ClickEvent)p_equals_1_;
+	/**
+	 * Gets the value to perform the action on when this event is raised. For
+	 * example, if the action is "open URL", this would be the URL to open.
+	 */
+	public String getValue() {
+		return this.value;
+	}
 
-            if (this.action != var2.action)
-            {
-                return false;
-            }
-            else
-            {
-                if (this.value != null)
-                {
-                    if (!this.value.equals(var2.value))
-                    {
-                        return false;
-                    }
-                }
-                else if (var2.value != null)
-                {
-                    return false;
-                }
+	public boolean equals(Object p_equals_1_) {
+		if (this == p_equals_1_) {
+			return true;
+		} else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
+			ClickEvent clickevent = (ClickEvent) p_equals_1_;
 
-                return true;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+			if (this.action != clickevent.action) {
+				return false;
+			} else {
+				if (this.value != null) {
+					if (!this.value.equals(clickevent.value)) {
+						return false;
+					}
+				} else if (clickevent.value != null) {
+					return false;
+				}
 
-    public String toString()
-    {
-        return "ClickEvent{action=" + this.action + ", value=\'" + this.value + '\'' + '}';
-    }
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
 
-    public int hashCode()
-    {
-        int var1 = this.action.hashCode();
-        var1 = 31 * var1 + (this.value != null ? this.value.hashCode() : 0);
-        return var1;
-    }
+	public String toString() {
+		return "ClickEvent{action=" + this.action + ", value=\'" + this.value + '\'' + '}';
+	}
 
-    public static enum Action
-    {
-        OPEN_URL("OPEN_URL", 0, "open_url", true),
-        OPEN_FILE("OPEN_FILE", 1, "open_file", false),
-        RUN_COMMAND("RUN_COMMAND", 2, "run_command", true),
-        TWITCH_USER_INFO("TWITCH_USER_INFO", 3, "twitch_user_info", false),
-        SUGGEST_COMMAND("SUGGEST_COMMAND", 4, "suggest_command", true),
-        CHANGE_PAGE("CHANGE_PAGE", 5, "change_page", true);
-        private static final Map nameMapping = Maps.newHashMap();
-        private final boolean allowedInChat;
-        private final String canonicalName;
+	public int hashCode() {
+		int i = this.action.hashCode();
+		i = 31 * i + (this.value != null ? this.value.hashCode() : 0);
+		return i;
+	}
 
-        private static final ClickEvent.Action[] $VALUES = new ClickEvent.Action[]{OPEN_URL, OPEN_FILE, RUN_COMMAND, TWITCH_USER_INFO, SUGGEST_COMMAND, CHANGE_PAGE};
-        private static final String __OBFID = "CL_00001261";
+	public static enum Action {
+		OPEN_URL("open_url", true), OPEN_FILE("open_file", false), RUN_COMMAND("run_command", true), TWITCH_USER_INFO("twitch_user_info", false), SUGGEST_COMMAND("suggest_command", true), CHANGE_PAGE("change_page", true);
 
-        private Action(String p_i45155_1_, int p_i45155_2_, String p_i45155_3_, boolean p_i45155_4_)
-        {
-            this.canonicalName = p_i45155_3_;
-            this.allowedInChat = p_i45155_4_;
-        }
+		private static final Map<String, ClickEvent.Action> nameMapping = Maps.<String, ClickEvent.Action>newHashMap();
+		private final boolean allowedInChat;
+		private final String canonicalName;
 
-        public boolean shouldAllowInChat()
-        {
-            return this.allowedInChat;
-        }
+		private Action(String canonicalNameIn, boolean allowedInChatIn) {
+			this.canonicalName = canonicalNameIn;
+			this.allowedInChat = allowedInChatIn;
+		}
 
-        public String getCanonicalName()
-        {
-            return this.canonicalName;
-        }
+		public boolean shouldAllowInChat() {
+			return this.allowedInChat;
+		}
 
-        public static ClickEvent.Action getValueByCanonicalName(String p_150672_0_)
-        {
-            return (ClickEvent.Action)nameMapping.get(p_150672_0_);
-        }
+		public String getCanonicalName() {
+			return this.canonicalName;
+		}
 
-        static {
-            ClickEvent.Action[] var0 = values();
-            int var1 = var0.length;
+		public static ClickEvent.Action getValueByCanonicalName(String canonicalNameIn) {
+			return (ClickEvent.Action) nameMapping.get(canonicalNameIn);
+		}
 
-            for (int var2 = 0; var2 < var1; ++var2)
-            {
-                ClickEvent.Action var3 = var0[var2];
-                nameMapping.put(var3.getCanonicalName(), var3);
-            }
-        }
-    }
+		static {
+			for (ClickEvent.Action clickevent$action : values()) {
+				nameMapping.put(clickevent$action.getCanonicalName(), clickevent$action);
+			}
+		}
+	}
 }

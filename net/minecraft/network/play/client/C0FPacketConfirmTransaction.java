@@ -1,70 +1,55 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
-import net.minecraft.network.INetHandler;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 
-public class C0FPacketConfirmTransaction implements Packet
-{
-    private int id;
-    private short uid;
-    private boolean accepted;
-    private static final String __OBFID = "CL_00001351";
+public class C0FPacketConfirmTransaction implements Packet<INetHandlerPlayServer> {
+	private int windowId;
+	private short uid;
+	private boolean accepted;
 
-    public C0FPacketConfirmTransaction() {}
+	public C0FPacketConfirmTransaction() {
+	}
 
-    public C0FPacketConfirmTransaction(int p_i45244_1_, short p_i45244_2_, boolean p_i45244_3_)
-    {
-        this.id = p_i45244_1_;
-        this.uid = p_i45244_2_;
-        this.accepted = p_i45244_3_;
-    }
+	public C0FPacketConfirmTransaction(int windowId, short uid, boolean accepted) {
+		this.windowId = windowId;
+		this.uid = uid;
+		this.accepted = accepted;
+	}
 
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandlerPlayServer handler)
-    {
-        handler.processConfirmTransaction(this);
-    }
+	/**
+	 * Passes this Packet on to the NetHandler for processing.
+	 */
+	public void processPacket(INetHandlerPlayServer handler) {
+		handler.processConfirmTransaction(this);
+	}
 
-    /**
-     * Reads the raw packet data from the data stream.
-     */
-    public void readPacketData(PacketBuffer data) throws IOException
-    {
-        this.id = data.readByte();
-        this.uid = data.readShort();
-        this.accepted = data.readByte() != 0;
-    }
+	/**
+	 * Reads the raw packet data from the data stream.
+	 */
+	public void readPacketData(PacketBuffer buf) throws IOException {
+		this.windowId = buf.readByte();
+		this.uid = buf.readShort();
+		this.accepted = buf.readByte() != 0;
+	}
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer data) throws IOException
-    {
-        data.writeByte(this.id);
-        data.writeShort(this.uid);
-        data.writeByte(this.accepted ? 1 : 0);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) throws IOException {
+		buf.writeByte(this.windowId);
+		buf.writeShort(this.uid);
+		buf.writeByte(this.accepted ? 1 : 0);
+	}
 
-    public int getId()
-    {
-        return this.id;
-    }
+	public int getWindowId() {
+		return this.windowId;
+	}
 
-    public short getUid()
-    {
-        return this.uid;
-    }
-
-    /**
-     * Passes this Packet on to the NetHandler for processing.
-     */
-    public void processPacket(INetHandler handler)
-    {
-        this.processPacket((INetHandlerPlayServer)handler);
-    }
+	public short getUid() {
+		return this.uid;
+	}
 }

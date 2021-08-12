@@ -1,6 +1,5 @@
 package net.minecraft.client.renderer.texture;
 
-public interface IIconCreator
-{
-    void func_177059_a(TextureMap var1);
+public interface IIconCreator {
+	void registerSprites(TextureMap iconRegistry);
 }

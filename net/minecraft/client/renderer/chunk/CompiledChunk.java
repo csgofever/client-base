@@ -1,91 +1,77 @@
 package net.minecraft.client.renderer.chunk;
 
-import com.google.common.collect.Lists;
 import java.util.List;
+
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumWorldBlockLayer;
 
-public class CompiledChunk
-{
-    public static final CompiledChunk field_178502_a = new CompiledChunk()
-    {
-        private static final String __OBFID = "CL_00002455";
-        protected void func_178486_a(EnumWorldBlockLayer p_178486_1_)
-        {
-            throw new UnsupportedOperationException();
-        }
-        public void func_178493_c(EnumWorldBlockLayer p_178493_1_)
-        {
-            throw new UnsupportedOperationException();
-        }
-        public boolean func_178495_a(EnumFacing p_178495_1_, EnumFacing p_178495_2_)
-        {
-            return false;
-        }
-    };
-    private final boolean[] field_178500_b = new boolean[EnumWorldBlockLayer.values().length];
-    private final boolean[] field_178501_c = new boolean[EnumWorldBlockLayer.values().length];
-    private boolean field_178498_d = true;
-    private final List field_178499_e = Lists.newArrayList();
-    private SetVisibility field_178496_f = new SetVisibility();
-    private WorldRenderer.State field_178497_g;
-    private static final String __OBFID = "CL_00002456";
+public class CompiledChunk {
+	public static final CompiledChunk DUMMY = new CompiledChunk() {
+		protected void setLayerUsed(EnumWorldBlockLayer layer) {
+			throw new UnsupportedOperationException();
+		}
 
-    public boolean func_178489_a()
-    {
-        return this.field_178498_d;
-    }
+		public void setLayerStarted(EnumWorldBlockLayer layer) {
+			throw new UnsupportedOperationException();
+		}
 
-    protected void func_178486_a(EnumWorldBlockLayer p_178486_1_)
-    {
-        this.field_178498_d = false;
-        this.field_178500_b[p_178486_1_.ordinal()] = true;
-    }
+		public boolean isVisible(EnumFacing facing, EnumFacing facing2) {
+			return false;
+		}
+	};
+	private final boolean[] layersUsed = new boolean[EnumWorldBlockLayer.values().length];
+	private final boolean[] layersStarted = new boolean[EnumWorldBlockLayer.values().length];
+	private boolean empty = true;
+	private final List<TileEntity> tileEntities = Lists.<TileEntity>newArrayList();
+	private SetVisibility setVisibility = new SetVisibility();
+	private WorldRenderer.State state;
 
-    public boolean func_178491_b(EnumWorldBlockLayer p_178491_1_)
-    {
-        return !this.field_178500_b[p_178491_1_.ordinal()];
-    }
+	public boolean isEmpty() {
+		return this.empty;
+	}
 
-    public void func_178493_c(EnumWorldBlockLayer p_178493_1_)
-    {
-        this.field_178501_c[p_178493_1_.ordinal()] = true;
-    }
+	protected void setLayerUsed(EnumWorldBlockLayer layer) {
+		this.empty = false;
+		this.layersUsed[layer.ordinal()] = true;
+	}
 
-    public boolean func_178492_d(EnumWorldBlockLayer p_178492_1_)
-    {
-        return this.field_178501_c[p_178492_1_.ordinal()];
-    }
+	public boolean isLayerEmpty(EnumWorldBlockLayer layer) {
+		return !this.layersUsed[layer.ordinal()];
+	}
 
-    public List func_178485_b()
-    {
-        return this.field_178499_e;
-    }
+	public void setLayerStarted(EnumWorldBlockLayer layer) {
+		this.layersStarted[layer.ordinal()] = true;
+	}
 
-    public void func_178490_a(TileEntity p_178490_1_)
-    {
-        this.field_178499_e.add(p_178490_1_);
-    }
+	public boolean isLayerStarted(EnumWorldBlockLayer layer) {
+		return this.layersStarted[layer.ordinal()];
+	}
 
-    public boolean func_178495_a(EnumFacing p_178495_1_, EnumFacing p_178495_2_)
-    {
-        return this.field_178496_f.func_178621_a(p_178495_1_, p_178495_2_);
-    }
+	public List<TileEntity> getTileEntities() {
+		return this.tileEntities;
+	}
 
-    public void func_178488_a(SetVisibility p_178488_1_)
-    {
-        this.field_178496_f = p_178488_1_;
-    }
+	public void addTileEntity(TileEntity tileEntityIn) {
+		this.tileEntities.add(tileEntityIn);
+	}
 
-    public WorldRenderer.State func_178487_c()
-    {
-        return this.field_178497_g;
-    }
+	public boolean isVisible(EnumFacing facing, EnumFacing facing2) {
+		return this.setVisibility.isVisible(facing, facing2);
+	}
 
-    public void func_178494_a(WorldRenderer.State p_178494_1_)
-    {
-        this.field_178497_g = p_178494_1_;
-    }
+	public void setVisibility(SetVisibility visibility) {
+		this.setVisibility = visibility;
+	}
+
+	public WorldRenderer.State getState() {
+		return this.state;
+	}
+
+	public void setState(WorldRenderer.State stateIn) {
+		this.state = stateIn;
+	}
 }

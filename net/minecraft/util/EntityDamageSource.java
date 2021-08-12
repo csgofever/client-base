@@ -5,50 +5,51 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-public class EntityDamageSource extends DamageSource
-{
-    protected Entity damageSourceEntity;
-    private boolean field_180140_r = false;
-    private static final String __OBFID = "CL_00001522";
+public class EntityDamageSource extends DamageSource {
+	protected Entity damageSourceEntity;
 
-    public EntityDamageSource(String p_i1567_1_, Entity p_i1567_2_)
-    {
-        super(p_i1567_1_);
-        this.damageSourceEntity = p_i1567_2_;
-    }
+	/**
+	 * Whether this EntityDamageSource is from an entity wearing Thorns-enchanted
+	 * armor.
+	 */
+	private boolean isThornsDamage = false;
 
-    public EntityDamageSource func_180138_v()
-    {
-        this.field_180140_r = true;
-        return this;
-    }
+	public EntityDamageSource(String p_i1567_1_, Entity damageSourceEntityIn) {
+		super(p_i1567_1_);
+		this.damageSourceEntity = damageSourceEntityIn;
+	}
 
-    public boolean func_180139_w()
-    {
-        return this.field_180140_r;
-    }
+	/**
+	 * Sets this EntityDamageSource as originating from Thorns armor
+	 */
+	public EntityDamageSource setIsThornsDamage() {
+		this.isThornsDamage = true;
+		return this;
+	}
 
-    public Entity getEntity()
-    {
-        return this.damageSourceEntity;
-    }
+	public boolean getIsThornsDamage() {
+		return this.isThornsDamage;
+	}
 
-    /**
-     * Gets the death message that is displayed when the player dies
-     */
-    public IChatComponent getDeathMessage(EntityLivingBase p_151519_1_)
-    {
-        ItemStack var2 = this.damageSourceEntity instanceof EntityLivingBase ? ((EntityLivingBase)this.damageSourceEntity).getHeldItem() : null;
-        String var3 = "death.attack." + this.damageType;
-        String var4 = var3 + ".item";
-        return var2 != null && var2.hasDisplayName() && StatCollector.canTranslate(var4) ? new ChatComponentTranslation(var4, new Object[] {p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName(), var2.getChatComponent()}): new ChatComponentTranslation(var3, new Object[] {p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName()});
-    }
+	public Entity getEntity() {
+		return this.damageSourceEntity;
+	}
 
-    /**
-     * Return whether this damage source will have its damage amount scaled based on the current difficulty.
-     */
-    public boolean isDifficultyScaled()
-    {
-        return this.damageSourceEntity != null && this.damageSourceEntity instanceof EntityLivingBase && !(this.damageSourceEntity instanceof EntityPlayer);
-    }
+	/**
+	 * Gets the death message that is displayed when the player dies
+	 */
+	public IChatComponent getDeathMessage(EntityLivingBase p_151519_1_) {
+		ItemStack itemstack = this.damageSourceEntity instanceof EntityLivingBase ? ((EntityLivingBase) this.damageSourceEntity).getHeldItem() : null;
+		String s = "death.attack." + this.damageType;
+		String s1 = s + ".item";
+		return itemstack != null && itemstack.hasDisplayName() && StatCollector.canTranslate(s1) ? new ChatComponentTranslation(s1, new Object[] { p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName(), itemstack.getChatComponent() }) : new ChatComponentTranslation(s, new Object[] { p_151519_1_.getDisplayName(), this.damageSourceEntity.getDisplayName() });
+	}
+
+	/**
+	 * Return whether this damage source will have its damage amount scaled based on
+	 * the current difficulty.
+	 */
+	public boolean isDifficultyScaled() {
+		return this.damageSourceEntity != null && this.damageSourceEntity instanceof EntityLivingBase && !(this.damageSourceEntity instanceof EntityPlayer);
+	}
 }

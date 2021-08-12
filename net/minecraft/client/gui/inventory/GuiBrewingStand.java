@@ -6,87 +6,81 @@ import net.minecraft.inventory.ContainerBrewingStand;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
-public class GuiBrewingStand extends GuiContainer
-{
-    private static final ResourceLocation brewingStandGuiTextures = new ResourceLocation("textures/gui/container/brewing_stand.png");
-    private final InventoryPlayer field_175384_v;
-    private IInventory tileBrewingStand;
-    private static final String __OBFID = "CL_00000746";
+public class GuiBrewingStand extends GuiContainer {
+	private static final ResourceLocation brewingStandGuiTextures = new ResourceLocation("textures/gui/container/brewing_stand.png");
 
-    public GuiBrewingStand(InventoryPlayer p_i45506_1_, IInventory p_i45506_2_)
-    {
-        super(new ContainerBrewingStand(p_i45506_1_, p_i45506_2_));
-        this.field_175384_v = p_i45506_1_;
-        this.tileBrewingStand = p_i45506_2_;
-    }
+	/** The player inventory bound to this GUI. */
+	private final InventoryPlayer playerInventory;
+	private IInventory tileBrewingStand;
 
-    /**
-     * Draw the foreground layer for the GuiContainer (everything in front of the items). Args : mouseX, mouseY
-     */
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
-    {
-        String var3 = this.tileBrewingStand.getDisplayName().getUnformattedText();
-        this.fontRendererObj.drawString(var3, this.xSize / 2 - this.fontRendererObj.getStringWidth(var3) / 2, 6, 4210752);
-        this.fontRendererObj.drawString(this.field_175384_v.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
-    }
+	public GuiBrewingStand(InventoryPlayer playerInv, IInventory p_i45506_2_) {
+		super(new ContainerBrewingStand(playerInv, p_i45506_2_));
+		this.playerInventory = playerInv;
+		this.tileBrewingStand = p_i45506_2_;
+	}
 
-    /**
-     * Args : renderPartialTicks, mouseX, mouseY
-     */
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
-    {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(brewingStandGuiTextures);
-        int var4 = (this.width - this.xSize) / 2;
-        int var5 = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(var4, var5, 0, 0, this.xSize, this.ySize);
-        int var6 = this.tileBrewingStand.getField(0);
+	/**
+	 * Draw the foreground layer for the GuiContainer (everything in front of the
+	 * items). Args : mouseX, mouseY
+	 */
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+		String s = this.tileBrewingStand.getDisplayName().getUnformattedText();
+		this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
+		this.fontRendererObj.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+	}
 
-        if (var6 > 0)
-        {
-            int var7 = (int)(28.0F * (1.0F - (float)var6 / 400.0F));
+	/**
+	 * Args : renderPartialTicks, mouseX, mouseY
+	 */
+	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		this.mc.getTextureManager().bindTexture(brewingStandGuiTextures);
+		int i = (this.width - this.xSize) / 2;
+		int j = (this.height - this.ySize) / 2;
+		this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
+		int k = this.tileBrewingStand.getField(0);
 
-            if (var7 > 0)
-            {
-                this.drawTexturedModalRect(var4 + 97, var5 + 16, 176, 0, 9, var7);
-            }
+		if (k > 0) {
+			int l = (int) (28.0F * (1.0F - (float) k / 400.0F));
 
-            int var8 = var6 / 2 % 7;
+			if (l > 0) {
+				this.drawTexturedModalRect(i + 97, j + 16, 176, 0, 9, l);
+			}
 
-            switch (var8)
-            {
-                case 0:
-                    var7 = 29;
-                    break;
+			int i1 = k / 2 % 7;
 
-                case 1:
-                    var7 = 24;
-                    break;
+			switch (i1) {
+			case 0:
+				l = 29;
+				break;
 
-                case 2:
-                    var7 = 20;
-                    break;
+			case 1:
+				l = 24;
+				break;
 
-                case 3:
-                    var7 = 16;
-                    break;
+			case 2:
+				l = 20;
+				break;
 
-                case 4:
-                    var7 = 11;
-                    break;
+			case 3:
+				l = 16;
+				break;
 
-                case 5:
-                    var7 = 6;
-                    break;
+			case 4:
+				l = 11;
+				break;
 
-                case 6:
-                    var7 = 0;
-            }
+			case 5:
+				l = 6;
+				break;
 
-            if (var7 > 0)
-            {
-                this.drawTexturedModalRect(var4 + 65, var5 + 14 + 29 - var7, 185, 29 - var7, 12, var7);
-            }
-        }
-    }
+			case 6:
+				l = 0;
+			}
+
+			if (l > 0) {
+				this.drawTexturedModalRect(i + 65, j + 14 + 29 - l, 185, 29 - l, 12, l);
+			}
+		}
+	}
 }

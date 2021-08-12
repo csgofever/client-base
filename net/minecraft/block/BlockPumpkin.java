@@ -1,5 +1,8 @@
 package net.minecraft.block;
 
+import com.google.common.base.Predicate;
+
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockState;
@@ -18,163 +21,140 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
-public class BlockPumpkin extends BlockDirectional
-{
-    private BlockPattern field_176394_a;
-    private BlockPattern field_176393_b;
-    private BlockPattern field_176395_M;
-    private BlockPattern field_176396_O;
-    private static final String __OBFID = "CL_00000291";
+public class BlockPumpkin extends BlockDirectional {
+	private BlockPattern snowmanBasePattern;
+	private BlockPattern snowmanPattern;
+	private BlockPattern golemBasePattern;
+	private BlockPattern golemPattern;
+	private static final Predicate<IBlockState> field_181085_Q = new Predicate<IBlockState>() {
+		public boolean apply(IBlockState p_apply_1_) {
+			return p_apply_1_ != null && (p_apply_1_.getBlock() == Blocks.pumpkin || p_apply_1_.getBlock() == Blocks.lit_pumpkin);
+		}
+	};
 
-    protected BlockPumpkin()
-    {
-        super(Material.gourd);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, EnumFacing.NORTH));
-        this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabBlock);
-    }
+	protected BlockPumpkin() {
+		super(Material.gourd, MapColor.adobeColor);
+		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		this.setTickRandomly(true);
+		this.setCreativeTab(CreativeTabs.tabBlock);
+	}
 
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
-    {
-        super.onBlockAdded(worldIn, pos, state);
-        this.createGolem(worldIn, pos);
-    }
+	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+		super.onBlockAdded(worldIn, pos, state);
+		this.trySpawnGolem(worldIn, pos);
+	}
 
-    public boolean func_176390_d(World worldIn, BlockPos p_176390_2_)
-    {
-        return this.func_176392_j().func_177681_a(worldIn, p_176390_2_) != null || this.func_176389_S().func_177681_a(worldIn, p_176390_2_) != null;
-    }
+	public boolean canDispenserPlace(World worldIn, BlockPos pos) {
+		return this.getSnowmanBasePattern().match(worldIn, pos) != null || this.getGolemBasePattern().match(worldIn, pos) != null;
+	}
 
-    private void createGolem(World worldIn, BlockPos p_180673_2_)
-    {
-        BlockPattern.PatternHelper var3;
-        int var4;
-        int var6;
+	private void trySpawnGolem(World worldIn, BlockPos pos) {
+		BlockPattern.PatternHelper blockpattern$patternhelper;
 
-        if ((var3 = this.func_176391_l().func_177681_a(worldIn, p_180673_2_)) != null)
-        {
-            for (var4 = 0; var4 < this.func_176391_l().func_177685_b(); ++var4)
-            {
-                BlockWorldState var5 = var3.func_177670_a(0, var4, 0);
-                worldIn.setBlockState(var5.getPos(), Blocks.air.getDefaultState(), 2);
-            }
+		if ((blockpattern$patternhelper = this.getSnowmanPattern().match(worldIn, pos)) != null) {
+			for (int i = 0; i < this.getSnowmanPattern().getThumbLength(); ++i) {
+				BlockWorldState blockworldstate = blockpattern$patternhelper.translateOffset(0, i, 0);
+				worldIn.setBlockState(blockworldstate.getPos(), Blocks.air.getDefaultState(), 2);
+			}
 
-            EntitySnowman var9 = new EntitySnowman(worldIn);
-            BlockPos var11 = var3.func_177670_a(0, 2, 0).getPos();
-            var9.setLocationAndAngles((double)var11.getX() + 0.5D, (double)var11.getY() + 0.05D, (double)var11.getZ() + 0.5D, 0.0F, 0.0F);
-            worldIn.spawnEntityInWorld(var9);
+			EntitySnowman entitysnowman = new EntitySnowman(worldIn);
+			BlockPos blockpos1 = blockpattern$patternhelper.translateOffset(0, 2, 0).getPos();
+			entitysnowman.setLocationAndAngles((double) blockpos1.getX() + 0.5D, (double) blockpos1.getY() + 0.05D, (double) blockpos1.getZ() + 0.5D, 0.0F, 0.0F);
+			worldIn.spawnEntityInWorld(entitysnowman);
 
-            for (var6 = 0; var6 < 120; ++var6)
-            {
-                worldIn.spawnParticle(EnumParticleTypes.SNOW_SHOVEL, (double)var11.getX() + worldIn.rand.nextDouble(), (double)var11.getY() + worldIn.rand.nextDouble() * 2.5D, (double)var11.getZ() + worldIn.rand.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
-            }
+			for (int j = 0; j < 120; ++j) {
+				worldIn.spawnParticle(EnumParticleTypes.SNOW_SHOVEL, (double) blockpos1.getX() + worldIn.rand.nextDouble(), (double) blockpos1.getY() + worldIn.rand.nextDouble() * 2.5D, (double) blockpos1.getZ() + worldIn.rand.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
+			}
 
-            for (var6 = 0; var6 < this.func_176391_l().func_177685_b(); ++var6)
-            {
-                BlockWorldState var7 = var3.func_177670_a(0, var6, 0);
-                worldIn.func_175722_b(var7.getPos(), Blocks.air);
-            }
-        }
-        else if ((var3 = this.func_176388_T().func_177681_a(worldIn, p_180673_2_)) != null)
-        {
-            for (var4 = 0; var4 < this.func_176388_T().func_177684_c(); ++var4)
-            {
-                for (int var12 = 0; var12 < this.func_176388_T().func_177685_b(); ++var12)
-                {
-                    worldIn.setBlockState(var3.func_177670_a(var4, var12, 0).getPos(), Blocks.air.getDefaultState(), 2);
-                }
-            }
+			for (int i1 = 0; i1 < this.getSnowmanPattern().getThumbLength(); ++i1) {
+				BlockWorldState blockworldstate1 = blockpattern$patternhelper.translateOffset(0, i1, 0);
+				worldIn.notifyNeighborsRespectDebug(blockworldstate1.getPos(), Blocks.air);
+			}
+		} else if ((blockpattern$patternhelper = this.getGolemPattern().match(worldIn, pos)) != null) {
+			for (int k = 0; k < this.getGolemPattern().getPalmLength(); ++k) {
+				for (int l = 0; l < this.getGolemPattern().getThumbLength(); ++l) {
+					worldIn.setBlockState(blockpattern$patternhelper.translateOffset(k, l, 0).getPos(), Blocks.air.getDefaultState(), 2);
+				}
+			}
 
-            BlockPos var10 = var3.func_177670_a(1, 2, 0).getPos();
-            EntityIronGolem var13 = new EntityIronGolem(worldIn);
-            var13.setPlayerCreated(true);
-            var13.setLocationAndAngles((double)var10.getX() + 0.5D, (double)var10.getY() + 0.05D, (double)var10.getZ() + 0.5D, 0.0F, 0.0F);
-            worldIn.spawnEntityInWorld(var13);
+			BlockPos blockpos = blockpattern$patternhelper.translateOffset(1, 2, 0).getPos();
+			EntityIronGolem entityirongolem = new EntityIronGolem(worldIn);
+			entityirongolem.setPlayerCreated(true);
+			entityirongolem.setLocationAndAngles((double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.05D, (double) blockpos.getZ() + 0.5D, 0.0F, 0.0F);
+			worldIn.spawnEntityInWorld(entityirongolem);
 
-            for (var6 = 0; var6 < 120; ++var6)
-            {
-                worldIn.spawnParticle(EnumParticleTypes.SNOWBALL, (double)var10.getX() + worldIn.rand.nextDouble(), (double)var10.getY() + worldIn.rand.nextDouble() * 3.9D, (double)var10.getZ() + worldIn.rand.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
-            }
+			for (int j1 = 0; j1 < 120; ++j1) {
+				worldIn.spawnParticle(EnumParticleTypes.SNOWBALL, (double) blockpos.getX() + worldIn.rand.nextDouble(), (double) blockpos.getY() + worldIn.rand.nextDouble() * 3.9D, (double) blockpos.getZ() + worldIn.rand.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
+			}
 
-            for (var6 = 0; var6 < this.func_176388_T().func_177684_c(); ++var6)
-            {
-                for (int var14 = 0; var14 < this.func_176388_T().func_177685_b(); ++var14)
-                {
-                    BlockWorldState var8 = var3.func_177670_a(var6, var14, 0);
-                    worldIn.func_175722_b(var8.getPos(), Blocks.air);
-                }
-            }
-        }
-    }
+			for (int k1 = 0; k1 < this.getGolemPattern().getPalmLength(); ++k1) {
+				for (int l1 = 0; l1 < this.getGolemPattern().getThumbLength(); ++l1) {
+					BlockWorldState blockworldstate2 = blockpattern$patternhelper.translateOffset(k1, l1, 0);
+					worldIn.notifyNeighborsRespectDebug(blockworldstate2.getPos(), Blocks.air);
+				}
+			}
+		}
+	}
 
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
-        return worldIn.getBlockState(pos).getBlock().blockMaterial.isReplaceable() && World.doesBlockHaveSolidTopSurface(worldIn, pos.offsetDown());
-    }
+	public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+		return worldIn.getBlockState(pos).getBlock().blockMaterial.isReplaceable() && World.doesBlockHaveSolidTopSurface(worldIn, pos.down());
+	}
 
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
-        return this.getDefaultState().withProperty(AGE, placer.func_174811_aO().getOpposite());
-    }
+	/**
+	 * Called by ItemBlocks just before a block is actually set in the world, to
+	 * allow for adjustments to the IBlockstate
+	 */
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+	}
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     */
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.getDefaultState().withProperty(AGE, EnumFacing.getHorizontal(meta));
-    }
+	/**
+	 * Convert the given metadata into a BlockState for this Block
+	 */
+	public IBlockState getStateFromMeta(int meta) {
+		return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
+	}
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumFacing)state.getValue(AGE)).getHorizontalIndex();
-    }
+	/**
+	 * Convert the BlockState into the correct metadata value
+	 */
+	public int getMetaFromState(IBlockState state) {
+		return ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
+	}
 
-    protected BlockState createBlockState()
-    {
-        return new BlockState(this, new IProperty[] {AGE});
-    }
+	protected BlockState createBlockState() {
+		return new BlockState(this, new IProperty[] { FACING });
+	}
 
-    protected BlockPattern func_176392_j()
-    {
-        if (this.field_176394_a == null)
-        {
-            this.field_176394_a = FactoryBlockPattern.start().aisle(new String[] {" ", "#", "#"}).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.snow))).build();
-        }
+	protected BlockPattern getSnowmanBasePattern() {
+		if (this.snowmanBasePattern == null) {
+			this.snowmanBasePattern = FactoryBlockPattern.start().aisle(new String[] { " ", "#", "#" }).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.snow))).build();
+		}
 
-        return this.field_176394_a;
-    }
+		return this.snowmanBasePattern;
+	}
 
-    protected BlockPattern func_176391_l()
-    {
-        if (this.field_176393_b == null)
-        {
-            this.field_176393_b = FactoryBlockPattern.start().aisle(new String[] {"^", "#", "#"}).where('^', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.pumpkin))).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.snow))).build();
-        }
+	protected BlockPattern getSnowmanPattern() {
+		if (this.snowmanPattern == null) {
+			this.snowmanPattern = FactoryBlockPattern.start().aisle(new String[] { "^", "#", "#" }).where('^', BlockWorldState.hasState(field_181085_Q)).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.snow))).build();
+		}
 
-        return this.field_176393_b;
-    }
+		return this.snowmanPattern;
+	}
 
-    protected BlockPattern func_176389_S()
-    {
-        if (this.field_176395_M == null)
-        {
-            this.field_176395_M = FactoryBlockPattern.start().aisle(new String[] {"~ ~", "###", "~#~"}).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.iron_block))).where('~', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.air))).build();
-        }
+	protected BlockPattern getGolemBasePattern() {
+		if (this.golemBasePattern == null) {
+			this.golemBasePattern = FactoryBlockPattern.start().aisle(new String[] { "~ ~", "###", "~#~" }).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.iron_block))).where('~', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.air))).build();
+		}
 
-        return this.field_176395_M;
-    }
+		return this.golemBasePattern;
+	}
 
-    protected BlockPattern func_176388_T()
-    {
-        if (this.field_176396_O == null)
-        {
-            this.field_176396_O = FactoryBlockPattern.start().aisle(new String[] {"~^~", "###", "~#~"}).where('^', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.pumpkin))).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.iron_block))).where('~', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.air))).build();
-        }
+	protected BlockPattern getGolemPattern() {
+		if (this.golemPattern == null) {
+			this.golemPattern = FactoryBlockPattern.start().aisle(new String[] { "~^~", "###", "~#~" }).where('^', BlockWorldState.hasState(field_181085_Q)).where('#', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.iron_block))).where('~', BlockWorldState.hasState(BlockStateHelper.forBlock(Blocks.air))).build();
+		}
 
-        return this.field_176396_O;
-    }
+		return this.golemPattern;
+	}
 }

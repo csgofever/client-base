@@ -1,64 +1,51 @@
 package net.minecraft.block.state;
 
 import com.google.common.base.Predicate;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockWorldState
-{
-    private final World world;
-    private final BlockPos pos;
-    private IBlockState field_177514_c;
-    private TileEntity field_177511_d;
-    private boolean field_177512_e;
-    private static final String __OBFID = "CL_00002026";
+public class BlockWorldState {
+	private final World world;
+	private final BlockPos pos;
+	private final boolean field_181628_c;
+	private IBlockState state;
+	private TileEntity tileEntity;
+	private boolean tileEntityInitialized;
 
-    public BlockWorldState(World worldIn, BlockPos p_i45659_2_)
-    {
-        this.world = worldIn;
-        this.pos = p_i45659_2_;
-    }
+	public BlockWorldState(World p_i46451_1_, BlockPos p_i46451_2_, boolean p_i46451_3_) {
+		this.world = p_i46451_1_;
+		this.pos = p_i46451_2_;
+		this.field_181628_c = p_i46451_3_;
+	}
 
-    public IBlockState func_177509_a()
-    {
-        if (this.field_177514_c == null && this.world.isBlockLoaded(this.pos))
-        {
-            this.field_177514_c = this.world.getBlockState(this.pos);
-        }
+	public IBlockState getBlockState() {
+		if (this.state == null && (this.field_181628_c || this.world.isBlockLoaded(this.pos))) {
+			this.state = this.world.getBlockState(this.pos);
+		}
 
-        return this.field_177514_c;
-    }
+		return this.state;
+	}
 
-    public TileEntity func_177507_b()
-    {
-        if (this.field_177511_d == null && !this.field_177512_e)
-        {
-            this.field_177511_d = this.world.getTileEntity(this.pos);
-            this.field_177512_e = true;
-        }
+	public TileEntity getTileEntity() {
+		if (this.tileEntity == null && !this.tileEntityInitialized) {
+			this.tileEntity = this.world.getTileEntity(this.pos);
+			this.tileEntityInitialized = true;
+		}
 
-        return this.field_177511_d;
-    }
+		return this.tileEntity;
+	}
 
-    public BlockPos getPos()
-    {
-        return this.pos;
-    }
+	public BlockPos getPos() {
+		return this.pos;
+	}
 
-    public static Predicate hasState(final Predicate p_177510_0_)
-    {
-        return new Predicate()
-        {
-            private static final String __OBFID = "CL_00002025";
-            public boolean func_177503_a(BlockWorldState p_177503_1_)
-            {
-                return p_177503_1_ != null && p_177510_0_.apply(p_177503_1_.func_177509_a());
-            }
-            public boolean apply(Object p_apply_1_)
-            {
-                return this.func_177503_a((BlockWorldState)p_apply_1_);
-            }
-        };
-    }
+	public static Predicate<BlockWorldState> hasState(final Predicate<IBlockState> p_177510_0_) {
+		return new Predicate<BlockWorldState>() {
+			public boolean apply(BlockWorldState p_apply_1_) {
+				return p_apply_1_ != null && p_177510_0_.apply(p_apply_1_.getBlockState());
+			}
+		};
+	}
 }

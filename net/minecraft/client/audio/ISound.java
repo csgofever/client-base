@@ -2,43 +2,36 @@ package net.minecraft.client.audio;
 
 import net.minecraft.util.ResourceLocation;
 
-public interface ISound
-{
-    ResourceLocation getSoundLocation();
+public interface ISound {
+	ResourceLocation getSoundLocation();
 
-    boolean canRepeat();
+	boolean canRepeat();
 
-    int getRepeatDelay();
+	int getRepeatDelay();
 
-    float getVolume();
+	float getVolume();
 
-    float getPitch();
+	float getPitch();
 
-    float getXPosF();
+	float getXPosF();
 
-    float getYPosF();
+	float getYPosF();
 
-    float getZPosF();
+	float getZPosF();
 
-    ISound.AttenuationType getAttenuationType();
+	ISound.AttenuationType getAttenuationType();
 
-    public static enum AttenuationType
-    {
-        NONE("NONE", 0, 0),
-        LINEAR("LINEAR", 1, 2);
-        private final int type;
+	public static enum AttenuationType {
+		NONE(0), LINEAR(2);
 
-        private static final ISound.AttenuationType[] $VALUES = new ISound.AttenuationType[]{NONE, LINEAR};
-        private static final String __OBFID = "CL_00001126";
+		private final int type;
 
-        private AttenuationType(String p_i45110_1_, int p_i45110_2_, int p_i45110_3_)
-        {
-            this.type = p_i45110_3_;
-        }
+		private AttenuationType(int typeIn) {
+			this.type = typeIn;
+		}
 
-        public int getTypeInt()
-        {
-            return this.type;
-        }
-    }
+		public int getTypeInt() {
+			return this.type;
+		}
+	}
 }

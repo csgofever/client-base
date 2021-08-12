@@ -1,109 +1,87 @@
 package net.minecraft.util;
 
-import java.util.Iterator;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 
-public class ChatComponentScore extends ChatComponentStyle
-{
-    private final String field_179999_b;
-    private final String field_180000_c;
-    private String field_179998_d = "";
-    private static final String __OBFID = "CL_00002309";
+public class ChatComponentScore extends ChatComponentStyle {
+	private final String name;
+	private final String objective;
 
-    public ChatComponentScore(String p_i45997_1_, String p_i45997_2_)
-    {
-        this.field_179999_b = p_i45997_1_;
-        this.field_180000_c = p_i45997_2_;
-    }
+	/** The value displayed instead of the real score (may be null) */
+	private String value = "";
 
-    public String func_179995_g()
-    {
-        return this.field_179999_b;
-    }
+	public ChatComponentScore(String nameIn, String objectiveIn) {
+		this.name = nameIn;
+		this.objective = objectiveIn;
+	}
 
-    public String func_179994_h()
-    {
-        return this.field_180000_c;
-    }
+	public String getName() {
+		return this.name;
+	}
 
-    public void func_179997_b(String p_179997_1_)
-    {
-        this.field_179998_d = p_179997_1_;
-    }
+	public String getObjective() {
+		return this.objective;
+	}
 
-    /**
-     * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
-     * different methods?
-     */
-    public String getUnformattedTextForChat()
-    {
-        MinecraftServer var1 = MinecraftServer.getServer();
+	/**
+	 * Sets the value displayed instead of the real score.
+	 */
+	public void setValue(String valueIn) {
+		this.value = valueIn;
+	}
 
-        if (var1 != null && var1.func_175578_N() && StringUtils.isNullOrEmpty(this.field_179998_d))
-        {
-            Scoreboard var2 = var1.worldServerForDimension(0).getScoreboard();
-            ScoreObjective var3 = var2.getObjective(this.field_180000_c);
+	/**
+	 * Gets the text of this component, without any special formatting codes added,
+	 * for chat. TODO: why is this two different methods?
+	 */
+	public String getUnformattedTextForChat() {
+		MinecraftServer minecraftserver = MinecraftServer.getServer();
 
-            if (var2.func_178819_b(this.field_179999_b, var3))
-            {
-                Score var4 = var2.getValueFromObjective(this.field_179999_b, var3);
-                this.func_179997_b(String.format("%d", new Object[] {Integer.valueOf(var4.getScorePoints())}));
-            }
-            else
-            {
-                this.field_179998_d = "";
-            }
-        }
+		if (minecraftserver != null && minecraftserver.isAnvilFileSet() && StringUtils.isNullOrEmpty(this.value)) {
+			Scoreboard scoreboard = minecraftserver.worldServerForDimension(0).getScoreboard();
+			ScoreObjective scoreobjective = scoreboard.getObjective(this.objective);
 
-        return this.field_179998_d;
-    }
+			if (scoreboard.entityHasObjective(this.name, scoreobjective)) {
+				Score score = scoreboard.getValueFromObjective(this.name, scoreobjective);
+				this.setValue(String.format("%d", new Object[] { Integer.valueOf(score.getScorePoints()) }));
+			} else {
+				this.value = "";
+			}
+		}
 
-    public ChatComponentScore func_179996_i()
-    {
-        ChatComponentScore var1 = new ChatComponentScore(this.field_179999_b, this.field_180000_c);
-        var1.func_179997_b(this.field_179998_d);
-        var1.setChatStyle(this.getChatStyle().createShallowCopy());
-        Iterator var2 = this.getSiblings().iterator();
+		return this.value;
+	}
 
-        while (var2.hasNext())
-        {
-            IChatComponent var3 = (IChatComponent)var2.next();
-            var1.appendSibling(var3.createCopy());
-        }
+	/**
+	 * Creates a copy of this component. Almost a deep copy, except the style is
+	 * shallow-copied.
+	 */
+	public ChatComponentScore createCopy() {
+		ChatComponentScore chatcomponentscore = new ChatComponentScore(this.name, this.objective);
+		chatcomponentscore.setValue(this.value);
+		chatcomponentscore.setChatStyle(this.getChatStyle().createShallowCopy());
 
-        return var1;
-    }
+		for (IChatComponent ichatcomponent : this.getSiblings()) {
+			chatcomponentscore.appendSibling(ichatcomponent.createCopy());
+		}
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (this == p_equals_1_)
-        {
-            return true;
-        }
-        else if (!(p_equals_1_ instanceof ChatComponentScore))
-        {
-            return false;
-        }
-        else
-        {
-            ChatComponentScore var2 = (ChatComponentScore)p_equals_1_;
-            return this.field_179999_b.equals(var2.field_179999_b) && this.field_180000_c.equals(var2.field_180000_c) && super.equals(p_equals_1_);
-        }
-    }
+		return chatcomponentscore;
+	}
 
-    public String toString()
-    {
-        return "ScoreComponent{name=\'" + this.field_179999_b + '\'' + "objective=\'" + this.field_180000_c + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
-    }
+	public boolean equals(Object p_equals_1_) {
+		if (this == p_equals_1_) {
+			return true;
+		} else if (!(p_equals_1_ instanceof ChatComponentScore)) {
+			return false;
+		} else {
+			ChatComponentScore chatcomponentscore = (ChatComponentScore) p_equals_1_;
+			return this.name.equals(chatcomponentscore.name) && this.objective.equals(chatcomponentscore.objective) && super.equals(p_equals_1_);
+		}
+	}
 
-    /**
-     * Creates a copy of this component.  Almost a deep copy, except the style is shallow-copied.
-     */
-    public IChatComponent createCopy()
-    {
-        return this.func_179996_i();
-    }
+	public String toString() {
+		return "ScoreComponent{name=\'" + this.name + '\'' + "objective=\'" + this.objective + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
+	}
 }

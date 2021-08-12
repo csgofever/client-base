@@ -9,60 +9,47 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-public class ItemGlassBottle extends Item
-{
-    private static final String __OBFID = "CL_00001776";
+public class ItemGlassBottle extends Item {
+	public ItemGlassBottle() {
+		this.setCreativeTab(CreativeTabs.tabBrewing);
+	}
 
-    public ItemGlassBottle()
-    {
-        this.setCreativeTab(CreativeTabs.tabBrewing);
-    }
+	/**
+	 * Called whenever this item is equipped and the right mouse button is pressed.
+	 * Args: itemStack, world, entityPlayer
+	 */
+	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn) {
+		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
 
-    /**
-     * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
-     */
-    public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
-    {
-        MovingObjectPosition var4 = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
+		if (movingobjectposition == null) {
+			return itemStackIn;
+		} else {
+			if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+				BlockPos blockpos = movingobjectposition.getBlockPos();
 
-        if (var4 == null)
-        {
-            return itemStackIn;
-        }
-        else
-        {
-            if (var4.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
-            {
-                BlockPos var5 = var4.func_178782_a();
+				if (!worldIn.isBlockModifiable(playerIn, blockpos)) {
+					return itemStackIn;
+				}
 
-                if (!worldIn.isBlockModifiable(playerIn, var5))
-                {
-                    return itemStackIn;
-                }
+				if (!playerIn.canPlayerEdit(blockpos.offset(movingobjectposition.sideHit), movingobjectposition.sideHit, itemStackIn)) {
+					return itemStackIn;
+				}
 
-                if (!playerIn.func_175151_a(var5.offset(var4.field_178784_b), var4.field_178784_b, itemStackIn))
-                {
-                    return itemStackIn;
-                }
+				if (worldIn.getBlockState(blockpos).getBlock().getMaterial() == Material.water) {
+					--itemStackIn.stackSize;
+					playerIn.triggerAchievement(StatList.objectUseStats[Item.getIdFromItem(this)]);
 
-                if (worldIn.getBlockState(var5).getBlock().getMaterial() == Material.water)
-                {
-                    --itemStackIn.stackSize;
-                    playerIn.triggerAchievement(StatList.objectUseStats[Item.getIdFromItem(this)]);
+					if (itemStackIn.stackSize <= 0) {
+						return new ItemStack(Items.potionitem);
+					}
 
-                    if (itemStackIn.stackSize <= 0)
-                    {
-                        return new ItemStack(Items.potionitem);
-                    }
+					if (!playerIn.inventory.addItemStackToInventory(new ItemStack(Items.potionitem))) {
+						playerIn.dropPlayerItemWithRandomChoice(new ItemStack(Items.potionitem, 1, 0), false);
+					}
+				}
+			}
 
-                    if (!playerIn.inventory.addItemStackToInventory(new ItemStack(Items.potionitem)))
-                    {
-                        playerIn.dropPlayerItemWithRandomChoice(new ItemStack(Items.potionitem, 1, 0), false);
-                    }
-                }
-            }
-
-            return itemStackIn;
-        }
-    }
+			return itemStackIn;
+		}
+	}
 }
